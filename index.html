@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Gerador Vendas de Imóveis em geral em Teresina PI — Radar de Mercado com dados oficiais</title>
+<meta name="description" content="Inteligência do mercado imobiliário de Teresina - PI com dados oficiais do Índice FipeZAP: preço do m² por bairro, valorização, aluguel e captação de leads." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#04060c; --bg-2:#080d18;
+  --panel:rgba(255,255,255,.045); --panel-2:rgba(255,255,255,.075);
+  --line:rgba(255,255,255,.09); --line-2:rgba(255,255,255,.16);
+  --gold:#ffc94d; --gold-2:#ff9d2e; --emerald:#16e2a3; --cyan:#3ec9ff; --red:#ff5f6d; --violet:#a78bfa;
+  --text:#eaf0fb; --muted:#8b9cba; --muted-2:#61728f;
+  --font:'Manrope',system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased;overflow-x:hidden;line-height:1.55}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(900px 600px at 12% -5%,rgba(255,201,77,.13),transparent 60%),
+             radial-gradient(800px 600px at 92% 8%,rgba(62,201,255,.11),transparent 60%),
+             radial-gradient(900px 700px at 50% 108%,rgba(22,226,163,.10),transparent 60%);}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+.wrap{width:min(1240px,92vw);margin:0 auto;position:relative;z-index:2}
+.mono{font-family:var(--mono)} .gold{color:var(--gold)} .em{color:var(--emerald)} .cy{color:var(--cyan)}
+
+/* ============ TOPBAR ============ */
+.topbar{position:relative;z-index:60;background:linear-gradient(90deg,#0d1420,#141b2b);border-bottom:1px solid var(--line);font-size:12.5px;padding:9px 0}
+.topbar .wrap{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;text-align:center}
+.topbar b{color:var(--gold)}
+.src-dot{width:7px;height:7px;border-radius:50%;background:var(--emerald);flex:0 0 auto}
+.topbar a{color:var(--cyan);border-bottom:1px dotted rgba(62,201,255,.5)}
+
+/* ============ NAV ============ */
+nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(16px);background:rgba(4,6,12,.8);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:70px;gap:20px}
+.brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:16px;letter-spacing:-.2px}
+.brand .mark{width:36px;height:36px;border-radius:11px;flex:0 0 auto;background:conic-gradient(from 210deg,var(--gold),var(--gold-2),#ff7a18,var(--gold));
+  display:grid;place-items:center;box-shadow:0 6px 22px rgba(255,157,46,.35);position:relative;overflow:hidden}
+.brand .mark::after{content:"";position:absolute;inset:9px;border-radius:50%;background:#04060c}
+.brand .mark i{position:absolute;width:50%;height:2px;background:rgba(4,6,12,.85);left:50%;top:50%;transform-origin:0 50%;animation:sweep 2.6s linear infinite;z-index:3}
+@keyframes sweep{to{transform:rotate(360deg)}}
+.navlinks{display:flex;gap:24px;font-size:14px;color:var(--muted);font-weight:500}
+.navlinks a:hover{color:var(--text)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;border-radius:12px;font-weight:700;font-size:14.5px;
+  padding:12px 20px;border:1px solid transparent;cursor:pointer;transition:.22s;white-space:nowrap;font-family:var(--font)}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-2));color:#1a1200;box-shadow:0 8px 26px rgba(255,157,46,.32)}
+.btn-gold:hover{transform:translateY(-2px)}
+.btn-ghost{background:var(--panel);border-color:var(--line-2);color:var(--text)}
+.btn-ghost:hover{background:var(--panel-2);transform:translateY(-2px)}
+.btn-em{background:linear-gradient(135deg,var(--emerald),#0bbf87);color:#00241a}
+.btn-lg{padding:16px 28px;font-size:16px;border-radius:14px}
+@media(max-width:940px){.navlinks{display:none}}
+
+/* ============ HERO ============ */
+header.hero{padding:58px 0 24px;position:relative}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:44px;align-items:center}
+@media(max-width:1040px){.hero-grid{grid-template-columns:1fr;gap:34px}}
+.pill{display:inline-flex;align-items:center;gap:9px;font-size:12.5px;font-weight:600;background:rgba(255,201,77,.10);
+  border:1px solid rgba(255,201,77,.28);color:var(--gold);padding:7px 14px;border-radius:999px;letter-spacing:.3px}
+h1{font-size:clamp(33px,4.8vw,55px);line-height:1.06;letter-spacing:-1.6px;font-weight:800;margin:20px 0 18px}
+h1 .grad{background:linear-gradient(100deg,var(--gold) 0%,#ffdf8f 40%,var(--gold-2) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.lead{font-size:17.5px;color:var(--muted);max-width:610px;margin-bottom:26px}
+.lead b{color:var(--text);font-weight:600}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:24px}
+.trust{display:flex;gap:20px;flex-wrap:wrap;font-size:12.5px;color:var(--muted-2)}
+.trust div{display:flex;align-items:center;gap:7px}
+.tick{color:var(--emerald);font-weight:800}
+.hero-visual{position:relative;border-radius:26px;overflow:hidden;border:1px solid var(--line-2);box-shadow:0 40px 90px rgba(0,0,0,.7)}
+.hero-visual img{width:100%;height:500px;object-fit:cover;filter:saturate(1.05) contrast(1.05)}
+.hero-visual::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,6,12,.15) 0%,rgba(4,6,12,.6) 55%,rgba(4,6,12,.95) 100%)}
+.hv-top{position:absolute;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;z-index:4;gap:10px;flex-wrap:wrap}
+.chip-live{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:.5px;
+  background:rgba(6,10,18,.74);backdrop-filter:blur(10px);border:1px solid var(--line-2);padding:7px 12px;border-radius:999px;color:#fff}
+.credit{grid-column:1/-1;font-size:10px;color:rgba(255,255,255,.45);letter-spacing:.3px;text-align:right;line-height:1.3}
+.hv-bottom{position:absolute;left:14px;right:14px;bottom:14px;z-index:4;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hv-card{background:rgba(8,13,24,.74);backdrop-filter:blur(14px);border:1px solid var(--line-2);border-radius:14px;padding:11px 13px}
+.hv-card small{display:block;color:var(--muted-2);font-size:10px;letter-spacing:.6px;text-transform:uppercase;font-weight:700}
+.hv-card strong{font-size:18px;font-family:var(--mono);font-weight:700}
+.hv-card .det{font-size:10.5px;color:var(--muted);margin-top:2px}
+@media(max-width:520px){.hv-bottom{grid-template-columns:1fr}}
+
+/* ============ KPI STRIP ============ */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:48px}
+@media(max-width:940px){.kpis{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.kpis{grid-template-columns:1fr}}
+.kpi{background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.02));border:1px solid var(--line);border-radius:18px;padding:18px;position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.65}
+.kpi h4{font-size:11px;letter-spacing:1.1px;text-transform:uppercase;color:var(--muted-2);font-weight:700;margin-bottom:8px}
+.kpi .val{font-family:var(--mono);font-size:28px;font-weight:700;letter-spacing:-1px;line-height:1}
+.kpi .sub{font-size:11.5px;color:var(--muted);margin-top:8px}
+.up{color:var(--emerald)} .down{color:var(--red)}
+
+/* ============ SECTION ============ */
+section{padding:72px 0;position:relative;z-index:2}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:11.5px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+.eyebrow::before{content:"";width:26px;height:1px;background:var(--gold);opacity:.7}
+h2{font-size:clamp(26px,3.2vw,40px);line-height:1.12;letter-spacing:-1.1px;font-weight:800;margin-bottom:14px}
+.sec-sub{color:var(--muted);font-size:16px;max-width:760px;margin-bottom:32px}
+.center{text-align:center}
+.center .sec-sub{margin-left:auto;margin-right:auto}
+.center .eyebrow{justify-content:center}
+.center .eyebrow::before{display:none}
+
+/* ============ PANEL ============ */
+.panel{background:linear-gradient(180deg,rgba(12,18,32,.92),rgba(6,10,18,.92));border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.5)}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:15px 20px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.02)}
+.panel-head h3{font-size:15px;font-weight:700;letter-spacing:-.2px;display:flex;align-items:center;gap:10px}
+.panel-head .meta{font-size:11.5px;color:var(--muted-2);font-family:var(--mono)}
+.panel-body{padding:20px}
+.charts-grid{display:grid;grid-template-columns:1.55fr 1fr;gap:20px}
+@media(max-width:1040px){.charts-grid{grid-template-columns:1fr}}
+.chart-box{position:relative;height:330px}
+.chart-box canvas{width:100%;height:100%;display:block;cursor:crosshair}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);margin-top:14px}
+.legend span{display:flex;align-items:center;gap:7px}
+.dot{width:9px;height:9px;border-radius:3px;display:inline-block}
+
+/* ============ FONTE / NOTA ============ */
+.srcnote{margin-top:12px;font-size:11.5px;color:var(--muted-2);line-height:1.65}
+.srcnote a{color:var(--cyan);border-bottom:1px dotted rgba(62,201,255,.45)}
+.honest{background:rgba(62,201,255,.07);border:1px solid rgba(62,201,255,.24);border-radius:14px;padding:14px 16px;font-size:13px;color:#c3d8ea;margin-top:18px}
+.honest b{color:var(--cyan)}
+
+/* ============ RADAR ============ */
+.radar-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:22px}
+@media(max-width:1040px){.radar-grid{grid-template-columns:1fr}}
+.radar-stage{position:relative;background:radial-gradient(circle at 50% 50%,rgba(22,226,163,.09),transparent 62%),#050a12;
+  border:1px solid var(--line);border-radius:20px;overflow:hidden;min-height:540px}
+.radar-stage canvas{width:100%;height:100%;display:block;position:absolute;inset:0}
+.radar-overlay{position:absolute;inset:0;pointer-events:none;padding:16px;display:flex;flex-direction:column;justify-content:space-between}
+.ro-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.ro-stat{background:rgba(6,10,18,.74);backdrop-filter:blur(10px);border:1px solid var(--line-2);border-radius:12px;padding:9px 13px}
+.ro-stat small{display:block;font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--muted-2);font-weight:800}
+.ro-stat strong{font-family:var(--mono);font-size:16px;color:var(--emerald)}
+.ro-scale{display:flex;gap:6px;font-family:var(--mono);font-size:10px;color:var(--muted-2);flex-wrap:wrap}
+.rank{display:grid;gap:7px}
+.rank-row{display:grid;grid-template-columns:22px 1fr auto auto;gap:11px;align-items:center;background:rgba(255,255,255,.03);
+  border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:12.8px}
+.rank-row .pos{font-family:var(--mono);font-weight:700;color:var(--muted-2)}
+.rank-row .nm{font-weight:600}
+.rank-row .nm small{display:block;color:var(--muted-2);font-weight:500;font-size:11px}
+.rank-row .vl{font-family:var(--mono);font-weight:700;color:var(--gold)}
+.rank-row .vf{font-family:var(--mono);font-weight:700;font-size:11.5px}
+.ctrl-card{background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:16px;padding:16px}
+.ctrl-card h5{font-size:11px;letter-spacing:1.1px;text-transform:uppercase;color:var(--muted-2);font-weight:800;margin-bottom:12px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{flex:1;min-width:80px;background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--muted);
+  border-radius:10px;padding:10px 8px;font-size:12.5px;font-weight:700;cursor:pointer;transition:.18s;font-family:var(--font)}
+.seg button:hover{color:var(--text);border-color:var(--line-2)}
+.seg button.on{background:linear-gradient(135deg,rgba(255,201,77,.22),rgba(255,157,46,.12));border-color:rgba(255,201,77,.5);color:var(--gold)}
+
+/* ============ TABELA DE REFERÊNCIA ============ */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:20px}
+.cmp{width:100%;border-collapse:separate;border-spacing:0;font-size:14px}
+.cmp th,.cmp td{padding:14px 16px;text-align:left;border-bottom:1px solid var(--line)}
+.cmp th{font-size:11px;letter-spacing:1.1px;text-transform:uppercase;color:var(--muted-2);font-weight:800}
+.cmp td:first-child{color:var(--text);font-weight:600}
+.cmp tr:last-child td{border-bottom:none}
+.cmp tbody tr:hover{background:rgba(255,255,255,.03)}
+.cmp .col-hi{background:rgba(255,201,77,.06)}
+.cmp .num{font-family:var(--mono);text-align:right}
+
+/* ============ ILUSTRATIVO ============ */
+.illus{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:760px){.illus{grid-template-columns:1fr}}
+.illus figure{margin:0;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:rgba(255,255,255,.03)}
+.illus img{height:200px;width:100%;object-fit:cover}
+.illus figcaption{padding:12px 14px;font-size:11.5px;color:var(--muted-2)}
+
+/* ============ STEPS ============ */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+@media(max-width:1000px){.steps{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.steps{grid-template-columns:1fr}}
+.step{background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:18px;padding:24px 20px}
+.step .n{font-family:var(--mono);font-size:12px;font-weight:700;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
+  background:rgba(255,201,77,.13);border:1px solid rgba(255,201,77,.32);color:var(--gold);margin-bottom:16px}
+.step h4{font-size:16px;font-weight:700;margin-bottom:8px;letter-spacing:-.3px}
+.step p{font-size:13.5px;color:var(--muted)}
+
+/* ============ PLANOS ============ */
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;align-items:start}
+@media(max-width:1000px){.plans{grid-template-columns:1fr;max-width:460px;margin:0 auto}}
+.plan{background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:22px;padding:28px 24px;position:relative}
+.plan.hot{background:linear-gradient(180deg,rgba(255,201,77,.10),rgba(255,255,255,.03));border-color:rgba(255,201,77,.42);transform:scale(1.03)}
+@media(max-width:1000px){.plan.hot{transform:none}}
+.plan .badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-size:10.5px;font-weight:800;letter-spacing:1px;
+  text-transform:uppercase;background:linear-gradient(135deg,var(--gold),var(--gold-2));color:#1a1200;padding:6px 14px;border-radius:999px;white-space:nowrap}
+.plan h4{font-size:13px;letter-spacing:1.3px;text-transform:uppercase;color:var(--muted);font-weight:800;margin-bottom:14px}
+.plan .p{font-family:var(--mono);font-size:40px;font-weight:700;letter-spacing:-2px;line-height:1}
+.plan .p span{font-size:14px;font-family:var(--font);color:var(--muted-2);font-weight:500;letter-spacing:0}
+.plan ul{list-style:none;margin:22px 0;display:grid;gap:11px}
+.plan li{font-size:13.8px;color:#c3cfe3;display:flex;gap:10px;align-items:flex-start}
+.plan li::before{content:"✓";color:var(--emerald);font-weight:800;flex:0 0 auto}
+
+/* ============ FAQ ============ */
+.faq{max-width:880px;margin:0 auto;display:grid;gap:12px}
+.faq-item{background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.faq-q{width:100%;background:none;border:none;color:var(--text);font-family:var(--font);font-size:15.5px;font-weight:600;
+  text-align:left;padding:18px 20px;cursor:pointer;display:flex;justify-content:space-between;gap:16px;align-items:center}
+.faq-q .ic{color:var(--gold);font-size:20px;transition:.25s;flex:0 0 auto;font-weight:400}
+.faq-item.open .faq-q .ic{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .34s ease;color:var(--muted);font-size:14.3px}
+.faq-a div{padding:0 20px 20px}
+.faq-item.open .faq-a{max-height:460px}
+
+/* ============ CTA FINAL ============ */
+.final{background:linear-gradient(150deg,rgba(255,201,77,.10),rgba(62,201,255,.06) 55%,rgba(22,226,163,.08));
+  border:1px solid var(--line-2);border-radius:28px;padding:52px 44px}
+@media(max-width:700px){.final{padding:32px 20px}}
+.final-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:42px;align-items:center}
+@media(max-width:960px){.final-grid{grid-template-columns:1fr;gap:30px}}
+.form{background:rgba(6,10,18,.62);backdrop-filter:blur(14px);border:1px solid var(--line-2);border-radius:20px;padding:26px}
+.form h4{font-size:18px;font-weight:700;margin-bottom:6px}
+.form p.hint{font-size:13px;color:var(--muted);margin-bottom:18px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;font-weight:700;letter-spacing:.5px;color:var(--muted);margin-bottom:7px;text-transform:uppercase}
+.field input,.field select{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--line-2);border-radius:11px;
+  padding:13px 14px;color:var(--text);font-family:var(--font);font-size:14.5px;outline:none;transition:.2s}
+.field input:focus,.field select:focus{border-color:var(--gold);background:rgba(255,201,77,.06)}
+.field select option{background:#0a0f1c}
+.ok{display:none;text-align:center;padding:24px 6px}
+.ok.show{display:block}
+.ok .ic{width:58px;height:58px;border-radius:50%;background:rgba(22,226,163,.14);border:1px solid rgba(22,226,163,.45);
+  display:grid;place-items:center;font-size:26px;color:var(--emerald);margin:0 auto 16px}
+.ok h4{font-size:19px;margin-bottom:8px}
+.ok p{font-size:13.5px;color:var(--muted)}
+.microcopy{font-size:11.5px;color:var(--muted-2);text-align:center;margin-top:12px}
+
+/* ============ FOOTER ============ */
+footer{border-top:1px solid var(--line);padding:44px 0 34px;position:relative;z-index:2;margin-top:20px}
+.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:30px;margin-bottom:32px}
+@media(max-width:900px){.foot-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.foot-grid{grid-template-columns:1fr}}
+footer h5{font-size:12px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted-2);font-weight:800;margin-bottom:14px}
+footer ul{list-style:none;display:grid;gap:9px;font-size:13px;color:var(--muted)}
+footer a:hover{color:var(--gold)}
+.foot-bottom{border-top:1px solid var(--line);padding-top:22px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted-2)}
+.fontes{font-size:12.5px;color:var(--muted-2);line-height:1.75}
+.fontes a{color:var(--cyan)}
+
+/* ============ WHATSAPP ============ */
+.float-wa{position:fixed;right:20px;bottom:22px;z-index:80;display:flex;align-items:center;gap:11px;
+  background:linear-gradient(135deg,#25d366,#12a850);color:#04240f;font-weight:800;font-size:14px;
+  padding:14px 20px 14px 15px;border-radius:999px;box-shadow:0 14px 40px rgba(37,211,102,.38);transition:.24s}
+.float-wa:hover{transform:translateY(-3px) scale(1.03)}
+.float-wa .ic{font-size:19px}
+@media(max-width:600px){.float-wa span.txt{display:none}.float-wa{padding:15px;border-radius:50%}}
+
+/* ============ REVEAL ============ */
+.rv{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.8,.2,1),transform .7s cubic-bezier(.2,.8,.2,1)}
+.rv.in{opacity:1;transform:none}
+
+@media(max-width:640px){
+  .ro-top{gap:6px;flex-wrap:nowrap}
+  .ro-stat{padding:6px 9px;border-radius:9px}
+  .ro-stat small{font-size:8px;letter-spacing:.4px}
+  .ro-stat strong{font-size:13px}
+  .radar-overlay{padding:10px}
+  .chart-box{height:260px}
+}
+@media(max-width:600px){
+  nav .wrap{height:auto;padding:10px 0;gap:10px}
+  .brand{font-size:13px;line-height:1.25}
+  .brand .mark{width:30px;height:30px;border-radius:9px}
+  .brand > div:last-child{max-width:142px}
+  nav .btn{padding:10px 13px;font-size:12.5px}
+  h1{letter-spacing:-1px}
+  .final{padding:30px 18px}
+  .hero-visual img{height:400px}
+  section{padding:56px 0}
+  .rank-row{grid-template-columns:20px 1fr auto;font-size:12px}
+  .rank-row .vf{display:none}
+}
+::selection{background:rgba(255,201,77,.3)}
+</style>
+</head>
+<body>
+
+<!-- ============ TOPBAR ============ -->
+<div class="topbar">
+  <div class="wrap">
+    <span class="src-dot"></span>
+    <span>Dados oficiais do <b>Índice FipeZAP</b> · última leitura: <b>agosto de 2026</b> · preço médio em Teresina: <b>R$ 6.032/m²</b></span>
+    <a href="https://myside.com.br/guia-imoveis/valor-metro-quadrado-teresina-pi" target="_blank" rel="noopener">ver fonte</a>
+  </div>
+</div>
+
+<!-- ============ NAV ============ -->
+<nav>
+  <div class="wrap">
+    <div class="brand">
+      <div class="mark"><i></i></div>
+      <div>Gerador Vendas de Imóveis<span class="gold">.</span><br><span style="font-size:11px;color:var(--muted-2);font-weight:600;letter-spacing:.4px">TERESINA - PI</span></div>
+    </div>
+    <div class="navlinks">
+      <a href="#mercado">Mercado de Teresina</a>
+      <a href="#radar">Radar por bairro</a>
+      <a href="#precos">Preços de referência</a>
+      <a href="#planos">Planos</a>
+      <a href="#faq">Perguntas</a>
+    </div>
+    <a href="#cadastro" class="btn btn-gold">Falar com um especialista</a>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <span class="pill"><span class="src-dot"></span> DADOS OFICIAIS · ÍNDICE FIPEZAP · TERESINA - PI</span>
+        <h1>O <span class="grad">radar de mercado</span> imobiliário de Teresina.</h1>
+        <p class="lead">
+          Preço do metro quadrado por bairro, valorização, aluguel e volume de anúncios —
+          com os números do <b>Índice FipeZAP</b>, atualizados mês a mês. Pare de negociar no achismo:
+          chegue na conversa com o dado na mão e <b>capture o lead direto nesta página</b>.
+        </p>
+        <div class="hero-cta">
+          <a href="#cadastro" class="btn btn-gold btn-lg">Quero receber o relatório →</a>
+          <a href="#mercado" class="btn btn-ghost btn-lg">Ver os dados de Teresina</a>
+        </div>
+        <div class="trust">
+          <div><span class="tick">✓</span> Fonte pública e citada</div>
+          <div><span class="tick">✓</span> Atualização mensal</div>
+          <div><span class="tick">✓</span> Suporte no WhatsApp</div>
+        </div>
+      </div>
+
+      <div class="hero-visual rv">
+        <img src="assets/hero-teresina.jpg" alt="Vista de Teresina - PI ao anoitecer" />
+        <div class="hv-top">
+          <span class="chip-live"><span class="src-dot"></span> ÍNDICE FIPEZAP</span>
+          <span class="chip-live mono">ago/2026</span>
+        </div>
+        <div class="hv-bottom">
+          <div class="hv-card">
+            <small>Preço médio de venda</small>
+            <strong class="gold">R$ 6.032<span style="font-size:12px;color:var(--muted-2)">/m²</span></strong>
+            <div class="det">+0,11% no mês · +7,23% em 12 meses</div>
+          </div>
+          <div class="hv-card">
+            <small>Bairro mais caro (venda)</small>
+            <strong class="cy">R$ 9.354<span style="font-size:12px;color:var(--muted-2)">/m²</span></strong>
+            <div class="det">Jóquei · FipeZAP ago/2026</div>
+          </div>
+          <div class="credit">Imagem ilustrativa gerada por IA — não representa imóvel real</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPIs REAIS -->
+    <div class="kpis rv">
+      <div class="kpi">
+        <h4>Preço médio de venda</h4>
+        <div class="val gold">R$ 6.032<span style="font-size:14px;color:var(--muted-2)">/m²</span></div>
+        <div class="sub">Teresina · <b>agosto/2026</b> · +0,11% no mês</div>
+      </div>
+      <div class="kpi">
+        <h4>Valorização em 12 meses</h4>
+        <div class="val em">+7,23%</div>
+        <div class="sub">acima da média nacional no período</div>
+      </div>
+      <div class="kpi">
+        <h4>Anúncios na base do índice</h4>
+        <div class="val">3.162</div>
+        <div class="sub">imóveis residenciais à venda · jun/2026</div>
+      </div>
+      <div class="kpi">
+        <h4>Posição no índice</h4>
+        <div class="val cy">46º<span style="font-size:14px;color:var(--muted-2)"> de 56</span></div>
+        <div class="sub">entre as 56 cidades monitoradas — um dos mais baratos</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ MERCADO ============ -->
+<section id="mercado">
+  <div class="wrap">
+    <div class="rv">
+      <div class="eyebrow">Dados oficiais</div>
+      <h2>O mercado de Teresina, <span class="grad">em números</span></h2>
+      <p class="sec-sub">Tudo nesta seção vem do Índice FipeZAP e de reportagens que publicam o índice. Cada gráfico indica o mês da leitura — nada aqui é estimativa nossa nem simulação.</p>
+    </div>
+
+    <div class="charts-grid rv">
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Evolução do preço de venda — Teresina</h3>
+          <div class="meta">R$/m² · mar/2025 → ago/2026</div>
+        </div>
+        <div class="panel-body">
+          <div class="chart-box"><canvas id="lineChart"></canvas></div>
+          <div class="srcnote">
+            Série mensal do Índice FipeZAP para Teresina (preço médio anunciado de venda, imóveis residenciais).
+            Última leitura: <b>agosto/2026 — R$ 6.032/m²</b>.
+            Fonte: <a href="https://myside.com.br/guia-imoveis/valor-metro-quadrado-teresina-pi" target="_blank" rel="noopener">Índice FipeZAP / guia imobiliário</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Indicadores do período</h3>
+          <div class="meta">FipeZAP</div>
+        </div>
+        <div class="panel-body">
+          <div class="rank">
+            <div class="rank-row"><span class="pos">•</span><span class="nm">Variação no mês (ago/2026)<small>preço médio de venda</small></span><span class="vl up">+0,11%</span></div>
+            <div class="rank-row"><span class="pos">•</span><span class="nm">Variação acumulada no ano<small>jan → ago/2026</small></span><span class="vl up">+5,54%</span></div>
+            <div class="rank-row"><span class="pos">•</span><span class="nm">Variação em 12 meses<small>ago/2025 → ago/2026</small></span><span class="vl up">+7,23%</span></div>
+            <div class="rank-row"><span class="pos">•</span><span class="nm">1º semestre de 2026<small>5ª maior valorização entre as capitais</small></span><span class="vl up">+5,08%</span></div>
+            <div class="rank-row"><span class="pos">•</span><span class="nm">Aluguel residencial médio<small>ago/2026</small></span><span class="vl cy">R$ 32,51/m²</span></div>
+            <div class="rank-row"><span class="pos">•</span><span class="nm">Aluguel — alta em 12 meses<small>ago/2025 → ago/2026</small></span><span class="vl up">+15,81%</span></div>
+            <div class="rank-row"><span class="pos">•</span><span class="nm">Rentabilidade do aluguel (yield)<small>anualizado · ago/2026</small></span><span class="vl cy">6,32% a.a.</span></div>
+          </div>
+          <div class="srcnote">
+            Fontes: <a href="https://downloads.fipe.org.br/indices/fipezap/fipezap-202608-residencial-venda.pdf" target="_blank" rel="noopener">FipeZAP venda (informe ago/2026)</a> ·
+            <a href="https://downloads.fipe.org.br/indices/fipezap/fipezap-202608-residencial-locacao.pdf" target="_blank" rel="noopener">FipeZAP locação (informe ago/2026)</a> ·
+            <a href="https://myside.com.br/guia-imoveis/valor-metro-quadrado-teresina-pi" target="_blank" rel="noopener">índice em Teresina</a> ·
+            <a href="https://portalodia.com/noticias/teresina/teresina-tem-a-quinta-maior-valorizacao-imobiliaria-do-brasil-veja-os-bairros-mais-caros-459503.html" target="_blank" rel="noopener">1º semestre (Portal O Dia)</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="charts-grid rv" style="margin-top:22px;grid-template-columns:1fr 1fr">
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Preço de venda por bairro</h3>
+          <div class="meta">R$/m² · ago/2026</div>
+        </div>
+        <div class="panel-body">
+          <div class="chart-box" style="height:330px"><canvas id="barVenda"></canvas></div>
+          <div class="srcnote">
+            Fonte: <a href="https://downloads.fipe.org.br/indices/fipezap/fipezap-202608-residencial-venda.pdf" target="_blank" rel="noopener">Índice FipeZAP — informe de agosto/2026</a> · leitura mais recente publicada.
+            No mesmo mês, a média residencial de Teresina era <b>R$ 6.032/m²</b>. Os bairros sem leitura no índice não são preenchidos com estimativa.
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Aluguel por bairro</h3>
+          <div class="meta">R$/m²/mês · ago/2026</div>
+        </div>
+        <div class="panel-body">
+          <div class="chart-box" style="height:330px"><canvas id="barAluguel"></canvas></div>
+          <div class="srcnote">
+            Fonte: <a href="https://downloads.fipe.org.br/indices/fipezap/fipezap-202608-residencial-locacao.pdf" target="_blank" rel="noopener">Índice FipeZAP de locação — informe de agosto/2026</a>.
+            Média de locação da cidade em agosto/2026: <b>R$ 32,51/m²</b>.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="honest rv">
+      <b>Transparência:</b> esta página não faz busca automática em portais de imóveis nem mostra anúncios individuais em tempo real — isso exigiria um servidor conectado a uma fonte de dados. O que você vê aqui são os <b>indicadores oficiais de mercado</b>, que são públicos, verificáveis e suficientes para precificar, negociar e qualificar um cliente.
+    </div>
+  </div>
+</section>
+
+<!-- ============ RADAR ============ -->
+<section id="radar">
+  <div class="wrap">
+    <div class="rv">
+      <div class="eyebrow">Radar por bairro</div>
+      <h2>O <span class="grad">radar de valorização</span> de Teresina</h2>
+      <p class="sec-sub">Cada ponta do radar é um bairro real, e a distância do centro é o preço médio do metro quadrado medido pelo índice. Quanto mais longe, mais caro o bairro.</p>
+    </div>
+
+    <div class="radar-grid rv">
+      <div class="radar-stage" id="radarStage">
+        <canvas id="radarCanvas"></canvas>
+        <div class="radar-overlay">
+          <div class="ro-top">
+            <div class="ro-stat"><small>Bairros no radar</small><strong id="roN">9</strong></div>
+            <div class="ro-stat"><small>Maior preço</small><strong id="roMax" style="color:var(--gold)">—</strong></div>
+            <div class="ro-stat"><small>Menor preço</small><strong id="roMin" style="color:var(--cyan)">—</strong></div>
+          </div>
+          <div class="ro-scale">
+            <span>BASE: ÍNDICE FIPEZAP</span><span>·</span><span>VENDA R$/m²</span><span>·</span><span>AGO/2026</span><span>·</span><span>TERESINA - PI</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="ctrl-card" style="margin-bottom:16px">
+          <h5>Ordenar o ranking por</h5>
+          <div class="seg" id="segSort">
+            <button class="on" data-sort="venda">Preço de venda</button>
+            <button data-sort="aluguel">Aluguel</button>
+            <button data-sort="valoriz">Valorização</button>
+          </div>
+        </div>
+        <div class="ctrl-card">
+          <h5>Ranking real dos bairros</h5>
+          <div class="rank" id="rankList"></div>
+          <div class="srcnote" style="margin-top:12px">
+            Preço de venda e valorização: FipeZAP ago/2026. Aluguel: FipeZAP locação ago/2026. Bairros sem leitura de aluguel aparecem com “—” — não preenchemos com estimativa.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="honest rv">
+      <b>Sobre a animação:</b> o giro no radar é apenas visual. Os valores, a ordem e o tamanho das pontas vêm do índice, não de um algoritmo de oportunidade. Preferimos dizer isso a inventar um “score” que não existe.
+    </div>
+  </div>
+</section>
+
+<!-- ============ PREÇOS DE REFERÊNCIA ============ -->
+<section id="precos">
+  <div class="wrap">
+    <div class="rv">
+      <div class="eyebrow">Preço de referência</div>
+      <h2>Quanto custa um imóvel em cada <span class="grad">bairro de Teresina</span></h2>
+      <p class="sec-sub">Cálculo aberto: preço médio do m² do bairro (índice FipeZAP) × uma área de referência. Use como ponto de partida da conversa — não como avaliação de um imóvel específico.</p>
+    </div>
+
+    <div class="tbl-wrap rv">
+      <table class="cmp">
+        <thead>
+          <tr>
+            <th>Bairro</th>
+            <th class="num">R$/m² venda (ago/2026)</th>
+            <th class="num">Var. 12 meses</th>
+            <th class="num col-hi">Apartamento 70 m²</th>
+            <th class="num col-hi">Apartamento 100 m²</th>
+            <th class="num col-hi">Casa 150 m²</th>
+          </tr>
+        </thead>
+        <tbody id="refBody"></tbody>
+      </table>
+    </div>
+    <div class="srcnote rv">
+      Cálculo simples de multiplicação: preço por m² × área, sem qualquer ajuste de estado de conservação, andar, padrão de acabamento ou oferta pontual.
+      Fonte do preço por m² e da variação: <a href="https://downloads.fipe.org.br/indices/fipezap/fipezap-202608-residencial-venda.pdf" target="_blank" rel="noopener">Índice FipeZAP — informe de agosto/2026</a>.
+      Média geral de Teresina no mesmo mês: <b>R$ 6.032/m²</b>.
+    </div>
+
+    <div class="illus rv" style="margin-top:26px">
+      <figure><img src="assets/imovel-apartamento.jpg" alt="Ilustração de sala de apartamento"><figcaption>Imagem ilustrativa gerada por IA. Não representa um imóvel real nem um anúncio de venda.</figcaption></figure>
+      <figure><img src="assets/imovel-casa.jpg" alt="Ilustração de fachada de casa"><figcaption>Imagem ilustrativa gerada por IA. Não representa um imóvel real nem um anúncio de venda.</figcaption></figure>
+      <figure><img src="assets/imovel-condominio.jpg" alt="Ilustração aérea de condomínio"><figcaption>Imagem ilustrativa gerada por IA. Não representa um imóvel real nem um anúncio de venda.</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COMO FUNCIONA ============ -->
+<section>
+  <div class="wrap">
+    <div class="rv center">
+      <div class="eyebrow">Como usar</div>
+      <h2>Do dado ao fechamento em <span class="grad">4 passos</span></h2>
+    </div>
+    <div class="steps rv" style="margin-top:36px">
+      <div class="step">
+        <div class="n">01</div>
+        <h4>Veja o preço do bairro</h4>
+        <p>Antes de falar com o cliente, consulte o metro quadrado real do bairro dele no índice oficial.</p>
+      </div>
+      <div class="step">
+        <div class="n">02</div>
+        <h4>Mostre a valorização</h4>
+        <p>Apresente a evolução dos últimos meses e a posição de Teresina entre as capitais. Dado na tela encerra discussão de preço.</p>
+      </div>
+      <div class="step">
+        <div class="n">03</div>
+        <h4>Qualifique o lead</h4>
+        <p>O visitante deixa nome, WhatsApp, bairro de interesse e objetivo direto no formulário desta página.</p>
+      </div>
+      <div class="step">
+        <div class="n">04</div>
+        <h4>Receba e atenda</h4>
+        <p>O contato aparece no seu painel reservado ao proprietário, pronto para o primeiro atendimento.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PLANOS ============ -->
+<section id="planos">
+  <div class="wrap">
+    <div class="rv center" style="margin-bottom:44px">
+      <div class="eyebrow">Planos</div>
+      <h2>Escolha o seu <span class="grad">acesso</span></h2>
+      <p class="sec-sub">Valores e condições definidos pelo responsável pela página. Ajuste o que precisar no painel.</p>
+    </div>
+    <div class="plans rv">
+      <div class="plan">
+        <h4>Acesso Start</h4>
+        <div class="p">R$ 100<span>/mês</span></div>
+        <ul>
+          <li>Painel de mercado com dados do índice</li>
+          <li>Preços de venda e aluguel por bairro</li>
+          <li>Preço de referência por metragem</li>
+          <li>1 usuário</li>
+          <li>Suporte por e-mail</li>
+        </ul>
+        <a href="#cadastro" class="btn btn-ghost" style="width:100%">Quero este plano</a>
+      </div>
+      <div class="plan hot">
+        <span class="badge">Mais escolhido</span>
+        <h4>Acesso Pro</h4>
+        <div class="p">R$ 297<span>/mês</span></div>
+        <ul>
+          <li>Tudo do Start</li>
+          <li>Radar de valorização por bairro</li>
+          <li>Ranking e série histórica completa</li>
+          <li>Painel de captação de leads</li>
+          <li>Até 3 usuários</li>
+          <li>Suporte prioritário no WhatsApp</li>
+        </ul>
+        <a href="#cadastro" class="btn btn-gold" style="width:100%">Quero este plano</a>
+      </div>
+      <div class="plan">
+        <h4>Acesso Master</h4>
+        <div class="p">R$ 697<span>/mês</span></div>
+        <ul>
+          <li>Tudo do Pro</li>
+          <li>Usuários ilimitados na equipe</li>
+          <li>Relatórios por bairro para o cliente</li>
+          <li>Exportação de dados em planilha</li>
+          <li>Treinamento mensal ao vivo</li>
+        </ul>
+        <a href="#cadastro" class="btn btn-em" style="width:100%">Quero este plano</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section id="faq">
+  <div class="wrap">
+    <div class="rv center" style="margin-bottom:34px">
+      <div class="eyebrow">Perguntas</div>
+      <h2>Perguntas <span class="grad">frequentes</span></h2>
+    </div>
+    <div class="faq rv">
+      <div class="faq-item"><button class="faq-q">De onde vêm os números desta página?<span class="ic">+</span></button><div class="faq-a"><div>Do Índice FipeZAP, que mede mensalmente o preço anunciado de venda e de locação de imóveis residenciais em 56 cidades brasileiras, incluindo Teresina. Cada gráfico e cada linha da tabela indica o mês da leitura e traz o link da fonte. Você pode conferir tudo por conta própria.</div></div></div>
+      <div class="faq-item"><button class="faq-q">O radar busca imóveis em portais automaticamente?<span class="ic">+</span></button><div class="faq-a"><div>Não. O radar mostra a valorização e o preço médio real por bairro segundo o índice oficial. Ele não varre anúncios individuais de imóveis em tempo real — isso exigiria um servidor conectado a uma fonte de dados, e não é o que esta página faz. Preferimos ser claros a prometer o que não entrega.</div></div></div>
+      <div class="faq-item"><button class="faq-q">Os valores de aluguel estão completos para todos os bairros?<span class="ic">+</span></button><div class="faq-a"><div>Não. O índice publica leitura de aluguel para um conjunto de bairros. Onde não existe leitura, a tabela mostra “—” em vez de um número inventado.</div></div></div>
+      <div class="faq-item"><button class="faq-q">O preço de referência substitui uma avaliação de imóvel?<span class="ic">+</span></button><div class="faq-a"><div>Não substitui. É uma multiplicação do preço médio do bairro pela metragem. Fatores como padrão de acabamento, andar, idade do imóvel e oferta pontual mudam o valor final. Use como faixa inicial, não como laudo.</div></div></div>
+      <div class="faq-item"><button class="faq-q">Para quem serve esta página?<span class="ic">+</span></button><div class="faq-a"><div>Corretores, imobiliárias, investidores e proprietários que querem discutir preço em Teresina com base em dado oficial em vez de opinião.</div></div></div>
+      <div class="faq-item"><button class="faq-q">Como funciona a captação de leads?<span class="ic">+</span></button><div class="faq-a"><div>O visitante preenche nome, WhatsApp, bairro de interesse e objetivo. O contato fica registrado no painel reservado ao responsável pela página, que pode exportar em planilha e ligar de volta. Nada é compartilhado com terceiros.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section id="cadastro">
+  <div class="wrap">
+    <div class="final rv">
+      <div class="final-grid">
+        <div>
+          <div class="eyebrow">Fale com o responsável</div>
+          <h2 style="margin-bottom:16px">Receba a leitura do mercado de Teresina no seu WhatsApp.</h2>
+          <p style="color:var(--muted);font-size:16px;margin-bottom:24px">
+            Deixe seu contato e informe o bairro de interesse. Retornamos com o preço médio atualizado do bairro, a valorização recente e as condições de acesso à plataforma.
+          </p>
+          <div style="display:grid;gap:13px;margin-bottom:24px">
+            <div style="display:flex;gap:11px;align-items:flex-start;font-size:14.5px"><span class="tick">✓</span><span><b>Preço do m² real</b> do bairro, direto da fonte oficial.</span></div>
+            <div style="display:flex;gap:11px;align-items:flex-start;font-size:14.5px"><span class="tick">✓</span><span><b>Valorização e aluguel</b> para comparar com o imóvel que você tem em vista.</span></div>
+            <div style="display:flex;gap:11px;align-items:flex-start;font-size:14.5px"><span class="tick">✓</span><span><b>Sem compromisso</b> — o contato é para conversar, não para empurrar plano.</span></div>
+          </div>
+          <div style="font-size:12.5px;color:var(--muted-2)">Última leitura do índice: <b class="gold">agosto de 2026</b> · R$ 6.032/m² em Teresina.</div>
+        </div>
+
+        <div class="form" id="formBox">
+          <form id="leadForm">
+            <h4>Quero receber os dados</h4>
+            <p class="hint">Leva menos de 1 minuto. Retornamos pelo WhatsApp.</p>
+            <div class="field">
+              <label for="nome">Seu nome</label>
+              <input id="nome" type="text" placeholder="Ex.: João Silva" required>
+            </div>
+            <div class="field">
+              <label for="zap">WhatsApp</label>
+              <input id="zap" type="tel" placeholder="(86) 9 9999-9999" required>
+            </div>
+            <div class="field">
+              <label for="bairro">Bairro de interesse</label>
+              <select id="bairro">
+                <option>Toda Teresina</option>
+                <option>Jóquei</option>
+                <option>São Cristóvão</option>
+                <option>Fátima</option>
+                <option>Horto</option>
+                <option>Planalto</option>
+                <option>Ininga</option>
+                <option>Noivos</option>
+                <option>Uruguai</option>
+                <option>Santa Isabel</option>
+                <option>Cristo Rei</option>
+                <option>Centro</option>
+                <option>Outro bairro</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="op">O que você procura</label>
+              <select id="op">
+                <option>Comprar para morar</option>
+                <option>Comprar para investir</option>
+                <option>Alugar</option>
+                <option>Sou corretor / imobiliária</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-gold" style="width:100%;margin-top:6px">Quero receber os dados →</button>
+            <p class="microcopy">Seus dados ficam com o responsável pela página. Sem spam.</p>
+          </form>
+
+          <div class="ok" id="okBox">
+            <div class="ic">✓</div>
+            <h4>Recebemos seu contato!</h4>
+            <p>Vamos responder no WhatsApp com o preço do m² do bairro que você escolheu e a valorização recente.</p>
+            <a class="btn btn-em btn-lg" style="margin-top:16px;display:inline-flex" href="https://wa.me/5586988253050" target="_blank" rel="noopener">Falar agora no WhatsApp</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="brand" style="margin-bottom:14px">
+          <div class="mark"><i></i></div>
+          <div>Gerador Vendas de Imóveis<span class="gold">.</span></div>
+        </div>
+        <p style="font-size:13.5px;color:var(--muted);max-width:340px">
+          Inteligência do mercado imobiliário de Teresina - PI, construída sobre o Índice FipeZAP: preço do metro quadrado por bairro, valorização, aluguel e captação de leads.
+        </p>
+      </div>
+      <div>
+        <h5>Nesta página</h5>
+        <ul>
+          <li><a href="#mercado">Mercado de Teresina</a></li>
+          <li><a href="#radar">Radar por bairro</a></li>
+          <li><a href="#precos">Preços de referência</a></li>
+          <li><a href="#planos">Planos</a></li>
+          <li><a href="#faq">Perguntas frequentes</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Fontes dos dados</h5>
+        <div class="fontes">
+          <a href="https://downloads.fipe.org.br/indices/fipezap/fipezap-202608-residencial-venda.pdf" target="_blank" rel="noopener">Índice FipeZAP — venda por bairro, ago/2026 (PDF oficial)</a><br>
+          <a href="https://downloads.fipe.org.br/indices/fipezap/fipezap-202608-residencial-locacao.pdf" target="_blank" rel="noopener">Índice FipeZAP — locação por bairro, ago/2026 (PDF oficial)</a><br>
+          <a href="https://myside.com.br/guia-imoveis/valor-metro-quadrado-teresina-pi" target="_blank" rel="noopener">Índice FipeZAP — Teresina (ago/2026)</a><br>
+          <a href="https://portalodia.com/noticias/teresina/teresina-tem-a-quinta-maior-valorizacao-imobiliaria-do-brasil-veja-os-bairros-mais-caros-459503.html" target="_blank" rel="noopener">Portal O Dia — valorização 2026</a><br>
+          <a href="https://g1.globo.com/pi/piaui/noticia/2026/06/18/aluguel-alta-teresina.ghtml" target="_blank" rel="noopener">G1 — aluguel em Teresina</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <span id="year">2026</span> Gerador Vendas de Imóveis — Teresina - PI. Todos os direitos reservados.</span>
+      <span>Dados: Índice FipeZAP · imagens ilustrativas geradas por IA</span>
+    </div>
+  </div>
+</footer>
+
+<a class="float-wa" href="#cadastro" aria-label="Falar no WhatsApp">
+  <span class="ic">✆</span><span class="txt">Falar no WhatsApp</span>
+</a>
+
+<script id="gvi-baked">window.GVI_BAKED={whatsapp:'5586988253050',titulo:'O radar de mercado imobiliário de Teresina.',precos:[100,297,697],checkout:['','',''],textos:{}};</script>
+
+<script>
+/* ============================================================
+   GERADOR VENDAS DE IMÓVEIS — TERESINA / PI
+   TODOS os números desta página vêm de fontes públicas citadas
+   no HTML. Não há simulação, contador inflado nem dado inventado.
+
+   Fontes:
+   • Índice FipeZAP — série mensal de venda em Teresina (mar/2025 a ago/2026)
+   • Índice FipeZAP — preço por bairro, venda (informe ago/2026, PDF oficial)
+   • Índice FipeZAP de locação — preço por bairro (informe ago/2026, PDF oficial)
+   • G1 / Portal O Dia / Meio News / Conecta Piauí — republicações do índice
+   ============================================================ */
+(function(){
+'use strict';
+
+var $  = function(s,c){ return (c||document).querySelector(s); };
+var $$ = function(s,c){ return Array.prototype.slice.call((c||document).querySelectorAll(s)); };
+function fmtInt(n){ return Math.round(n).toLocaleString('pt-BR'); }
+function fmt1(n){ return (Math.round(n*10)/10).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1}); }
+function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+function fitCanvas(cv){
+  var dpr=window.devicePixelRatio||1, r=cv.getBoundingClientRect();
+  if(!r.width||!r.height) return null;
+  cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr);
+  var ctx=cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
+  return {ctx:ctx,w:r.width,h:r.height};
+}
+if(!CanvasRenderingContext2D.prototype.roundRect){
+  CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){
+    var q=Array.isArray(r)?r:[r,r,r,r];
+    this.beginPath(); this.moveTo(x+q[0],y);
+    this.lineTo(x+w-q[1],y); this.quadraticCurveTo(x+w,y,x+w,y+q[1]);
+    this.lineTo(x+w,y+h-q[2]); this.quadraticCurveTo(x+w,y+h,x+w-q[2],y+h);
+    this.lineTo(x+q[3],y+h); this.quadraticCurveTo(x,y+h,x,y+h-q[3]);
+    this.lineTo(x,y+q[0]); this.quadraticCurveTo(x,y,x+q[0],y);
+    return this;
+  };
+}
+
+/* ============================================================
+   DADOS REAIS — ÍNDICE FIPEZAP
+   ============================================================ */
+
+/* Série mensal de venda, Teresina — preço médio anunciado (R$/m²) */
+var SERIE = [
+  { m:'mar/25', v:5634 }, { m:'abr/25', v:5633 }, { m:'mai/25', v:5643 }, { m:'jun/25', v:5655 },
+  { m:'jul/25', v:5664 }, { m:'ago/25', v:5698 }, { m:'set/25', v:5723 }, { m:'out/25', v:5774 },
+  { m:'nov/25', v:5784 }, { m:'dez/25', v:5789 }, { m:'jan/26', v:5725 }, { m:'fev/26', v:5753 },
+  { m:'mar/26', v:5791 }, { m:'abr/26', v:5857 }, { m:'mai/26', v:5941 }, { m:'jun/26', v:6005 },
+  { m:'jul/26', v:6026 }, { m:'ago/26', v:6032 }
+];
+
+/* Preço de venda por bairro — FipeZAP ago/2026 (R$/m²) · var. em 12 meses */
+var VENDA = [
+  { b:'Jóquei',        v:9354, var:3.7  },
+  { b:'Fátima',        v:9030, var:8.0  },
+  { b:'São Cristóvão', v:9017, var:-1.0 },
+  { b:'Horto',         v:8412, var:11.8 },
+  { b:'Planalto',      v:7239, var:13.7 },
+  { b:'Ininga',        v:7189, var:21.8 },
+  { b:'Noivos',        v:6567, var:2.2  },
+  { b:'Cristo Rei',    v:5664, var:22.5 },
+  { b:'Uruguai',       v:4731, var:5.8  },
+  { b:'Santa Isabel',  v:4354, var:-1.1 }
+];
+
+/* Aluguel por bairro — FipeZAP locação ago/2026 (R$/m²/mês) · var. em 12 meses */
+var ALUGUEL = {
+  'São Cristóvão': { v:50.7, var:12.7 },
+  'Jóquei':        { v:44.3, var:23.4 },
+  'Planalto':      { v:43.7, var:2.3  },
+  'Ininga':        { v:33.9, var:22.6 },
+  'Fátima':        { v:32.9, var:3.9  },
+  'Cristo Rei':    { v:31.5, var:15.8 },
+  'Horto':         { v:31.3, var:-2.6 },
+  'Uruguai':       { v:31.3, var:17.7 },
+  'Santa Isabel':  { v:22.9, var:4.7  },
+  'Centro':        { v:21.0, var:16.8 }
+};
+
+var ULT = SERIE[SERIE.length-1];              // ago/2026
+var MEDIA_ABR = 6032;                          // média de Teresina, venda ago/2026
+var ANUNCIOS = 3162;                           // anúncios residenciais à venda, jun/2026
+var MEDIA_ALUGUEL = 32.51;                     // locação média, ago/2026
+
+$('#year').textContent = new Date().getFullYear();
+
+/* ============================================================
+   1) GRÁFICO DE LINHA — SÉRIE REAL DO ÍNDICE
+   ============================================================ */
+var lineCv = $('#lineChart'), lineGeom=null, hoverIdx=-1;
+
+function drawLine(){
+  if(!lineGeom) return;
+  var ctx=lineGeom.ctx, W=lineGeom.w, H=lineGeom.h;
+  ctx.clearRect(0,0,W,H);
+  var padL=62, padR=18, padT=20, padB=34;
+  var pw=W-padL-padR, ph=H-padT-padB;
+  var vals=SERIE.map(function(o){return o.v;});
+  var min=Math.min.apply(null,vals), max=Math.max.apply(null,vals);
+  var lo=min-90, hi=max+90;
+  function X(i){ return padL + (i/(SERIE.length-1))*pw; }
+  function Y(v){ return padT + ph - ((v-lo)/(hi-lo))*ph; }
+
+  ctx.font='10px "JetBrains Mono", monospace'; ctx.textBaseline='middle';
+  for(var s=0;s<=4;s++){
+    var v=lo+(s/4)*(hi-lo), y=Y(v);
+    ctx.strokeStyle='rgba(255,255,255,.055)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke();
+    ctx.fillStyle='rgba(139,156,186,.85)'; ctx.textAlign='right';
+    ctx.fillText(fmtInt(v), padL-10, y);
+  }
+  /* eixo de meses */
+  ctx.textAlign='center'; ctx.fillStyle='rgba(139,156,186,.75)'; ctx.font='9.5px "JetBrains Mono", monospace';
+  for(var i=0;i<SERIE.length;i++){ if(i%3===0 || i===SERIE.length-1) ctx.fillText(SERIE[i].m, X(i), H-13); }
+
+  /* área + linha */
+  ctx.beginPath();
+  for(var a=0;a<SERIE.length;a++){ var px=X(a), py=Y(SERIE[a].v); if(a===0) ctx.moveTo(px,py); else ctx.lineTo(px,py); }
+  ctx.strokeStyle='#ffc94d'; ctx.lineWidth=2.6; ctx.lineJoin='round';
+  ctx.shadowColor='#ffc94d'; ctx.shadowBlur=14; ctx.stroke(); ctx.shadowBlur=0;
+  ctx.lineTo(X(SERIE.length-1), padT+ph); ctx.lineTo(X(0), padT+ph); ctx.closePath();
+  var g=ctx.createLinearGradient(0,padT,0,padT+ph);
+  g.addColorStop(0,'rgba(255,201,77,.30)'); g.addColorStop(1,'rgba(255,201,77,0)');
+  ctx.fillStyle=g; ctx.fill();
+
+  /* pontos */
+  for(var p=0;p<SERIE.length;p++){
+    ctx.beginPath(); ctx.arc(X(p), Y(SERIE[p].v), 3, 0, Math.PI*2);
+    ctx.fillStyle = (p===SERIE.length-1) ? '#ffc94d' : 'rgba(255,201,77,.65)'; ctx.fill();
+  }
+  /* marcador da leitura mais recente — base do preço por bairro */
+  var idxRef=SERIE.length-1;
+  ctx.setLineDash([5,5]); ctx.strokeStyle='rgba(62,201,255,.5)'; ctx.lineWidth=1.2;
+  ctx.beginPath(); ctx.moveTo(X(idxRef),padT); ctx.lineTo(X(idxRef),padT+ph); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='rgba(62,201,255,.9)'; ctx.font='9.5px "JetBrains Mono", monospace'; ctx.textAlign='right';
+  ctx.fillText('leitura: '+SERIE[idxRef].m, X(idxRef)-6, padT+10);
+
+  /* tooltip */
+  if(hoverIdx>=0 && hoverIdx<SERIE.length){
+    var hx=X(hoverIdx), d=SERIE[hoverIdx];
+    ctx.strokeStyle='rgba(255,255,255,.3)'; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(hx,padT); ctx.lineTo(hx,padT+ph); ctx.stroke(); ctx.setLineDash([]);
+    ctx.beginPath(); ctx.arc(hx, Y(d.v), 5, 0, Math.PI*2); ctx.fillStyle='#ffc94d'; ctx.fill();
+    var boxW=140, boxH=46;
+    var bx=Math.min(Math.max(hx+12,padL), W-padR-boxW), by=padT+6;
+    ctx.fillStyle='rgba(6,10,18,.95)'; ctx.strokeStyle='rgba(255,255,255,.18)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.roundRect(bx,by,boxW,boxH,9); ctx.fill(); ctx.stroke();
+    ctx.textAlign='left'; ctx.font='bold 10.5px "JetBrains Mono", monospace'; ctx.fillStyle='#ffc94d';
+    ctx.fillText(d.m+'   R$ '+fmtInt(d.v), bx+11, by+17);
+    ctx.font='10px "JetBrains Mono", monospace'; ctx.fillStyle='rgba(139,156,186,.9)';
+    var prev = hoverIdx>0 ? SERIE[hoverIdx-1].v : null;
+    ctx.fillText(prev ? ('no mês: ' + (d.v-prev>=0?'+':'') + fmtInt(d.v-prev) + ' R$/m²') : 'início da série', bx+11, by+34);
+  }
+}
+
+/* ============================================================
+   2) GRÁFICO DE BARRAS — REUTILIZÁVEL
+   ============================================================ */
+function drawBars(cv, rows, colorSet, fmt){
+  var g=fitCanvas(cv); if(!g) return;
+  var ctx=g.ctx, W=g.w, H=g.h;
+  ctx.clearRect(0,0,W,H);
+  var padL=62, padR=16, padT=26, padB=78;
+  var pw=W-padL-padR, ph=H-padT-padB;
+  var vals=rows.map(function(r){return r.v;});
+  var max=Math.max.apply(null,vals)*1.16;
+  ctx.font='10px "JetBrains Mono", monospace'; ctx.textBaseline='middle';
+  for(var s=0;s<=4;s++){
+    var v=(s/4)*max, y=padT+ph-(s/4)*ph;
+    ctx.strokeStyle='rgba(255,255,255,.055)'; ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke();
+    ctx.fillStyle='rgba(139,156,186,.8)'; ctx.textAlign='right'; ctx.fillText(fmtInt(v), padL-9, y);
+  }
+  var n=rows.length, slot=pw/n, bw=Math.min(48, slot*0.58);
+  for(var i=0;i<n;i++){
+    var val=rows[i].v, h=(val/max)*ph, x=padL+slot*i+(slot-bw)/2, y=padT+ph-h;
+    var gr=ctx.createLinearGradient(0,y,0,padT+ph);
+    gr.addColorStop(0, colorSet[i%colorSet.length]); gr.addColorStop(1,'rgba(255,255,255,.05)');
+    ctx.fillStyle=gr;
+    ctx.beginPath(); ctx.roundRect(x,y,bw,Math.max(h,2),[7,7,3,3]); ctx.fill();
+    ctx.fillStyle='rgba(234,240,251,.95)'; ctx.font='bold 10.5px "JetBrains Mono", monospace'; ctx.textAlign='center';
+    ctx.fillText(fmt(val), x+bw/2, y-12);
+    ctx.save(); ctx.translate(x+bw/2, padT+ph+13); ctx.rotate(-Math.PI/4.4);
+    ctx.fillStyle='rgba(203,214,234,.92)'; ctx.font='10.5px "Manrope", sans-serif';
+    ctx.textAlign='right'; ctx.textBaseline='middle';
+    ctx.fillText(rows[i].b,0,0); ctx.restore();
+  }
+}
+
+/* ============================================================
+   3) RADAR DE VALORIZAÇÃO — POLAR COM DADOS REAIS
+   ============================================================ */
+var radarCv=$('#radarCanvas'), radarGeom=null, ang=0;
+
+function drawRadar(){
+  if(!radarGeom) return;
+  var ctx=radarGeom.ctx, W=radarGeom.w, H=radarGeom.h;
+  ctx.clearRect(0,0,W,H);
+  var cx=W/2, cy=H/2, R=Math.min(W,H)/2 - 62;
+  if(R<40) return;
+
+  var n=VENDA.length;
+  var vals=VENDA.map(function(o){return o.v;});
+  var max=Math.max.apply(null,vals), min=Math.min.apply(null,vals);
+
+  /* anéis */
+  for(var i=1;i<=4;i++){
+    ctx.beginPath(); ctx.arc(cx,cy,(R/4)*i,0,Math.PI*2);
+    ctx.strokeStyle='rgba(22,226,163,'+(i===4?0.3:0.13)+')'; ctx.lineWidth=1; ctx.stroke();
+  }
+  /* raios */
+  for(var k=0;k<n;k++){
+    var a=(k/n)*Math.PI*2 - Math.PI/2;
+    ctx.beginPath(); ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+Math.cos(a)*R, cy+Math.sin(a)*R);
+    ctx.strokeStyle='rgba(22,226,163,.12)'; ctx.lineWidth=1; ctx.stroke();
+  }
+  /* varredura (decoração) */
+  for(var s=0;s<46;s++){
+    var a0=ang-(s/46)*(Math.PI*0.6), a1=ang-((s+1)/46)*(Math.PI*0.6);
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,R,a1,a0); ctx.closePath();
+    ctx.fillStyle='rgba(22,226,163,'+(0.14*Math.pow(1-(s/46),1.6))+')'; ctx.fill();
+  }
+  ctx.beginPath(); ctx.moveTo(cx,cy);
+  ctx.lineTo(cx+Math.cos(ang)*R, cy+Math.sin(ang)*R);
+  ctx.strokeStyle='rgba(22,226,163,.7)'; ctx.lineWidth=1.4;
+  ctx.shadowColor='#16e2a3'; ctx.shadowBlur=10; ctx.stroke(); ctx.shadowBlur=0;
+
+  /* polígono real */
+  ctx.beginPath();
+  for(var p=0;p<n;p++){
+    var ap=(p/n)*Math.PI*2 - Math.PI/2;
+    var rr=0.18 + ((vals[p]-min)/((max-min)||1))*0.82;
+    var px=cx+Math.cos(ap)*R*rr, py=cy+Math.sin(ap)*R*rr;
+    if(p===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+  }
+  ctx.closePath();
+  ctx.fillStyle='rgba(255,201,77,.16)'; ctx.fill();
+  ctx.strokeStyle='#ffc94d'; ctx.lineWidth=2; ctx.stroke();
+
+  /* pontos + rótulos */
+  for(var q=0;q<n;q++){
+    var aq=(q/n)*Math.PI*2 - Math.PI/2;
+    var rq=0.18 + ((vals[q]-min)/((max-min)||1))*0.82;
+    var qx=cx+Math.cos(aq)*R*rq, qy=cy+Math.sin(aq)*R*rq;
+    ctx.beginPath(); ctx.arc(qx,qy,4.5,0,Math.PI*2);
+    ctx.fillStyle='#ffc94d'; ctx.shadowColor='#ffc94d'; ctx.shadowBlur=12; ctx.fill(); ctx.shadowBlur=0;
+
+    var lx=cx+Math.cos(aq)*(R+26), ly=cy+Math.sin(aq)*(R+26);
+    ctx.font='bold 10.5px "JetBrains Mono", monospace';
+    ctx.textAlign = Math.abs(Math.cos(aq))<0.3 ? 'center' : (Math.cos(aq)>0?'left':'right');
+    ctx.textBaseline='middle';
+    ctx.fillStyle='rgba(234,240,251,.95)';
+    ctx.fillText(VENDA[q].b, lx, ly-6);
+    ctx.fillStyle='rgba(255,201,77,.95)'; ctx.font='10px "JetBrains Mono", monospace';
+    ctx.fillText('R$ '+fmtInt(VENDA[q].v), lx, ly+8);
+  }
+
+  /* centro */
+  ctx.beginPath(); ctx.arc(cx,cy,6,0,Math.PI*2);
+  ctx.fillStyle='rgba(22,226,163,.9)'; ctx.shadowColor='#16e2a3'; ctx.shadowBlur=18; ctx.fill(); ctx.shadowBlur=0;
+  ctx.font='bold 9.5px "JetBrains Mono", monospace'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillStyle='rgba(22,226,163,.75)';
+  ctx.fillText('TERESINA - PI', cx, cy+22);
+}
+
+/* ranking real */
+var sortBy='venda';
+function renderRank(){
+  var rows = VENDA.map(function(o){
+    var al = ALUGUEL[o.b];
+    return { b:o.b, venda:o.v, aluguel: al?al.v:null, valoriz: (o.var!=null?o.var:(al?al.var:null)) };
+  });
+  rows.sort(function(a,b){
+    if(sortBy==='venda') return b.venda-a.venda;
+    if(sortBy==='aluguel') return (b.aluguel||-1)-(a.aluguel||-1);
+    return (b.valoriz==null?-999:b.valoriz)-(a.valoriz==null?-999:a.valoriz);
+  });
+  var el=$('#rankList'); el.innerHTML='';
+  rows.forEach(function(r,i){
+    var d=document.createElement('div'); d.className='rank-row';
+    var head = sortBy==='aluguel' ? 'R$ '+fmt1(r.aluguel)+'/m²' + (r.aluguel==null?'':' ')
+             : sortBy==='valoriz' ? (r.valoriz==null?'—':((r.valoriz>0?'+':'')+fmt1(r.valoriz)+'%'))
+             : 'R$ '+fmtInt(r.venda)+'/m²';
+    var foot = sortBy==='venda' ? (r.aluguel!=null ? ('aluguel R$ '+fmt1(r.aluguel)+'/m²') : 'sem leitura de aluguel')
+             : ('venda R$ '+fmtInt(r.venda)+'/m²');
+    d.innerHTML = '<span class="pos">'+String(i+1).padStart(2,'0')+'</span>'+
+      '<span class="nm">'+r.b+' <small>'+foot+'</small></span>'+
+      '<span class="vl">'+head+'</span>';
+    el.appendChild(d);
+  });
+  $('#roN').textContent = VENDA.length;
+  $('#roMax').textContent = 'R$ '+fmtInt(Math.max.apply(null,VENDA.map(function(o){return o.v;})))+'/m²';
+  $('#roMin').textContent = 'R$ '+fmtInt(Math.min.apply(null,VENDA.map(function(o){return o.v;})))+'/m²';
+}
+$('#segSort').addEventListener('click', function(e){
+  var b=e.target.closest('button'); if(!b) return;
+  $$('#segSort button').forEach(function(x){ x.classList.remove('on'); });
+  b.classList.add('on'); sortBy=b.getAttribute('data-sort'); renderRank();
+});
+
+/* ============================================================
+   4) TABELA DE PREÇO DE REFERÊNCIA
+   ============================================================ */
+function renderRef(){
+  var body=$('#refBody'); body.innerHTML='';
+  VENDA.forEach(function(o){
+    var tr=document.createElement('tr');
+    var vd=(o.var>0?'+':'')+fmt1(o.var)+'%';
+    var vcls=(o.var>=0?'up':'down');
+    tr.innerHTML = '<td>'+o.b+'</td>'+
+      '<td class="num gold">R$ '+fmtInt(o.v)+'</td>'+
+      '<td class="num '+vcls+'">'+vd+'</td>'+
+      '<td class="num col-hi">R$ '+fmtInt(o.v*70)+'</td>'+
+      '<td class="num col-hi">R$ '+fmtInt(o.v*100)+'</td>'+
+      '<td class="num col-hi">R$ '+fmtInt(o.v*150)+'</td>';
+    body.appendChild(tr);
+  });
+  var media=Math.round(SERIE[SERIE.length-1].v);
+  var tr=document.createElement('tr');
+  tr.innerHTML = '<td>Média de Teresina</td>'+
+    '<td class="num gold">R$ '+fmtInt(media)+'</td>'+
+    '<td class="num up">+7,23%</td>'+
+    '<td class="num col-hi">R$ '+fmtInt(media*70)+'</td>'+
+    '<td class="num col-hi">R$ '+fmtInt(media*100)+'</td>'+
+    '<td class="num col-hi">R$ '+fmtInt(media*150)+'</td>';
+  body.appendChild(tr);
+}
+
+/* ============================================================
+   5) CONTADORES / REVEAL
+   ============================================================ */
+var io=new IntersectionObserver(function(entries){
+  entries.forEach(function(en){
+    if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); }
+  });
+},{threshold:.15});
+$$('.rv').forEach(function(el){ io.observe(el); });
+
+/* ============================================================
+   6) FAQ
+   ============================================================ */
+$$('.faq-q').forEach(function(q){
+  q.addEventListener('click', function(){
+    var item=q.parentElement, was=item.classList.contains('open');
+    $$('.faq-item').forEach(function(i){ i.classList.remove('open'); });
+    if(!was) item.classList.add('open');
+  });
+});
+$$('.faq-item')[0].classList.add('open');
+
+/* ============================================================
+   7) FORMULÁRIO — registra no painel do proprietário
+   ============================================================ */
+var leadForm=$('#leadForm');
+if(leadForm){
+  leadForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    var nome=$('#nome').value.trim(), zap=$('#zap').value.trim();
+    if(!nome || !zap) return;
+
+    var lead = { nome:nome, zap:zap, bairro:$('#bairro').value, objetivo:$('#op').value, ts:Date.now() };
+
+    /* envio externo (grátis): Web3Forms e/ou webhook configurados no painel */
+    var bk=(window.GVI_BAKED||{}), lc=bk.leads||{};
+    var w3=(lc.web3forms||'').trim(), hook=(lc.webhook||'').trim();
+    var payload={ nome:lead.nome, whatsapp:lead.zap, bairro:lead.bairro, objetivo:lead.objetivo,
+                  pagina:'Radar Teresina', enviado_em:new Date(lead.ts).toISOString() };
+    if(w3){
+      fetch('https://api.web3forms.com/submit',{ method:'POST',
+        headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body:JSON.stringify(Object.assign({ access_key:w3, subject:'Novo lead — Radar Imobiliário Teresina', from_name:'Radar Teresina' }, payload))
+      }).catch(function(){});
+    }
+    if(hook){
+      fetch(hook,{ method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body:JSON.stringify(payload) }).catch(function(){});
+    }
+    try{
+      var arr=JSON.parse(localStorage.getItem('gvi_leads')||'[]');
+      arr.push(lead);
+      localStorage.setItem('gvi_leads', JSON.stringify(arr));
+    }catch(err){}
+
+    leadForm.style.display='none';
+    $('#okBox').classList.add('show');
+  });
+}
+
+/* ============================================================
+   8) LOOPS / RESIZE
+   ============================================================ */
+function resizeAll(){
+  lineGeom  = fitCanvas(lineCv);
+  radarGeom = fitCanvas(radarCv);
+}
+window.addEventListener('resize', resizeAll);
+window.addEventListener('orientationchange', resizeAll);
+
+var last=0;
+function frame(t){
+  if(radarGeom){ ang += 0.020; if(ang>Math.PI*2) ang-=Math.PI*2; }
+  drawLine(); drawRadar();
+  requestAnimationFrame(frame);
+}
+
+lineCv.addEventListener('mousemove', function(e){
+  if(!lineGeom) return;
+  var r=lineCv.getBoundingClientRect(), x=e.clientX-r.left;
+  var padL=62, padR=18, pw=lineGeom.w-padL-padR;
+  hoverIdx = Math.round(((x-padL)/pw)*(SERIE.length-1));
+  if(hoverIdx<0) hoverIdx=0; if(hoverIdx>SERIE.length-1) hoverIdx=SERIE.length-1;
+});
+lineCv.addEventListener('mouseleave', function(){ hoverIdx=-1; });
+
+setTimeout(function(){
+  resizeAll();
+  drawBars($('#barVenda'), VENDA.map(function(o){return {b:o.b, v:o.v};}),
+    ['#ffc94d','#3ec9ff','#16e2a3','#a78bfa'], function(v){ return fmtInt(v); });
+  drawBars($('#barAluguel'),
+    Object.keys(ALUGUEL).map(function(k){ return {b:k, v:ALUGUEL[k].v}; }),
+    ['#3ec9ff','#16e2a3','#ffc94d','#a78bfa'], function(v){ return fmt1(v); });
+  renderRank(); renderRef();
+  requestAnimationFrame(frame);
+}, 100);
+
+/* ============================================================
+   9) PONTE COM O PAINEL DO PROPRIETÁRIO (ADM)
+   ============================================================ */
+var GVI_FIELDS=[
+ {k:'hero.tag',g:'Hero',label:'Selo do topo',sel:'.hero .pill',html:true,def:'<span class="src-dot"></span> DADOS OFICIAIS · ÍNDICE FIPEZAP · TERESINA - PI'},
+ {k:'hero.title',g:'Hero',label:'Título principal',sel:'.hero h1',html:true,def:'O <span class="grad">radar de mercado</span> imobiliário de Teresina.'},
+ {k:'hero.lead',g:'Hero',label:'Texto de apoio',sel:'.hero .lead',html:true,def:'Preço do metro quadrado por bairro, valorização, aluguel e volume de anúncios — com os números do <b>Índice FipeZAP</b>, atualizados mês a mês. Pare de negociar no achismo: chegue na conversa com o dado na mão e <b>capture o lead direto nesta página</b>.'},
+ {k:'hero.cta1',g:'Hero',label:'Botão principal',sel:'.hero-cta a:nth-child(1)',html:false,def:'Quero receber o relatório →'},
+ {k:'hero.cta2',g:'Hero',label:'Botão secundário',sel:'.hero-cta a:nth-child(2)',html:false,def:'Ver os dados de Teresina'},
+ {k:'nav.cta',g:'Hero',label:'Botão do menu (topo)',sel:'nav .wrap > a.btn',html:false,def:'Falar com um especialista'},
+ {k:'mercado.title',g:'Seções',label:'Título — Mercado',sel:'#mercado h2',html:true,def:'O mercado de Teresina, <span class="grad">em números</span>'},
+ {k:'mercado.sub',g:'Seções',label:'Subtítulo — Mercado',sel:'#mercado .sec-sub',html:false,def:'Tudo nesta seção vem do Índice FipeZAP e de reportagens que publicam o índice. Cada gráfico indica o mês da leitura — nada aqui é estimativa nossa nem simulação.'},
+ {k:'radar.title',g:'Seções',label:'Título — Radar',sel:'#radar h2',html:true,def:'O <span class="grad">radar de valorização</span> de Teresina'},
+ {k:'radar.sub',g:'Seções',label:'Subtítulo — Radar',sel:'#radar .sec-sub',html:false,def:'Cada ponta do radar é um bairro real, e a distância do centro é o preço médio do metro quadrado medido pelo índice. Quanto mais longe, mais caro o bairro.'},
+ {k:'precos.title',g:'Seções',label:'Título — Preços',sel:'#precos h2',html:true,def:'Quanto custa um imóvel em cada <span class="grad">bairro de Teresina</span>'},
+ {k:'precos.sub',g:'Seções',label:'Subtítulo — Preços',sel:'#precos .sec-sub',html:false,def:'Cálculo aberto: preço médio do m² do bairro (índice FipeZAP) × uma área de referência. Use como ponto de partida da conversa — não como avaliação de um imóvel específico.'},
+ {k:'faq.title',g:'Seções',label:'Título — Perguntas',sel:'#faq h2',html:true,def:'Perguntas <span class="grad">frequentes</span>'},
+ {k:'planos.title',g:'Planos',label:'Título',sel:'#planos h2',html:true,def:'Escolha o seu <span class="grad">acesso</span>'},
+ {k:'planos.sub',g:'Planos',label:'Subtítulo',sel:'#planos .sec-sub',html:false,def:'Valores e condições definidos pelo responsável pela página. Ajuste o que precisar no painel.'},
+ {k:'planos.n1',g:'Planos',label:'Plano 1 — nome',sel:'#planos .plan:nth-child(1) h4',html:false,def:'Acesso Start'},
+ {k:'planos.n2',g:'Planos',label:'Plano 2 — nome',sel:'#planos .plan:nth-child(2) h4',html:false,def:'Acesso Pro'},
+ {k:'planos.n3',g:'Planos',label:'Plano 3 — nome',sel:'#planos .plan:nth-child(3) h4',html:false,def:'Acesso Master'},
+ {k:'cta.eyebrow',g:'Contato',label:'Selo da seção',sel:'#cadastro .eyebrow',html:false,def:'Fale com o responsável'},
+ {k:'cta.title',g:'Contato',label:'Título da seção',sel:'#cadastro h2',html:false,def:'Receba a leitura do mercado de Teresina no seu WhatsApp.'},
+ {k:'cta.sub',g:'Contato',label:'Texto da seção',sel:'#cadastro h2 + p',html:false,def:'Deixe seu contato e informe o bairro de interesse. Retornamos com o preço médio atualizado do bairro, a valorização recente e as condições de acesso à plataforma.'},
+ {k:'form.title',g:'Contato',label:'Título do formulário',sel:'#leadForm h4',html:false,def:'Quero receber os dados'},
+ {k:'form.hint',g:'Contato',label:'Apoio do formulário',sel:'#leadForm .hint',html:false,def:'Leva menos de 1 minuto. Retornamos pelo WhatsApp.'},
+ {k:'form.cta',g:'Contato',label:'Botão do formulário',sel:'#leadForm button[type=submit]',html:false,def:'Quero receber os dados →'},
+ {k:'form.micro',g:'Contato',label:'Aviso do formulário',sel:'#leadForm .microcopy',html:false,def:'Seus dados ficam com o responsável pela página. Sem spam.'},
+ {k:'foot.about',g:'Rodapé',label:'Texto do rodapé',sel:'footer .foot-grid > div:first-child p',html:false,def:'Inteligência do mercado imobiliário de Teresina - PI, construída sobre o Índice FipeZAP: preço do metro quadrado por bairro, valorização, aluguel e captação de leads.'}
+];
+
+window.GVI = {
+  setTitulo: function(t){ var h=document.querySelector('h1'); if(h && t) h.textContent=t; },
+  setTextos: function(map){
+    if(!map) return;
+    for(var i=0;i<GVI_FIELDS.length;i++){
+      var f=GVI_FIELDS[i]; if(!f||!f.sel) continue;
+      if(map[f.k]===undefined||map[f.k]===null) continue;
+      var el=document.querySelector(f.sel); if(!el) continue;
+      el.innerHTML=String(map[f.k]);
+    }
+  },
+  setWhatsapp: function(n){
+    if(!n) return;
+    var link='https://wa.me/'+String(n).replace(/\D/g,'');
+    var f=document.querySelector('.float-wa'); if(f) f.href=link;
+    var ok=document.querySelector('#okBox a.btn-em'); if(ok) ok.href=link;
+  },
+  setPrecos: function(arr){
+    if(!Array.isArray(arr)) return;
+    var ps=document.querySelectorAll('.plan .p');
+    for(var i=0;i<ps.length;i++){
+      if(arr[i]==null) continue;
+      var span=ps[i].querySelector('span');
+      ps[i].textContent='R$ '+arr[i];
+      if(span) ps[i].appendChild(span);
+    }
+  },
+  setPlanLinks: function(wa, checkout){
+    var ps=document.querySelectorAll('#planos .plan');
+    for(var i=0;i<ps.length;i++){
+      var a=ps[i].querySelector('a.btn'); if(!a) continue;
+      var url=(checkout&&checkout[i])?String(checkout[i]).trim():'';
+      if(url){
+        a.setAttribute('href',url); a.setAttribute('target','_blank'); a.setAttribute('rel','noopener');
+      }else{
+        var h4=ps[i].querySelector('h4'), pp=ps[i].querySelector('.p');
+        var nome=h4?h4.textContent.trim():('Plano '+(i+1));
+        var preco=pp?pp.textContent.trim():'';
+        var msg='Olá! Quero o plano '+nome+(preco?(' — '+preco):'')+'. Como faço o pagamento?';
+        a.setAttribute('href','https://wa.me/'+String(wa||'').replace(/\D/g,'')+'?text='+encodeURIComponent(msg));
+        a.removeAttribute('target'); a.removeAttribute('rel');
+      }
+    }
+  },
+  serie: SERIE, venda: VENDA, aluguel: ALUGUEL, fields: GVI_FIELDS
+};
+})();
+</script>
+
+<script>
+/* ============================================================
+   PAINEL DO PROPRIETÁRIO (ADM)
+   Registra visitas, aplica as configurações salvas no painel e
+   cria o acesso discreto ao admin.html no rodapé.
+   ============================================================ */
+(function(){
+  function read(k,d){ try{ var v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } }
+  function write(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+
+  /* visita */
+  var st = read('gvi_stats',{visits:0,first:null,last:null,visitsList:[]});
+  st.visits=(st.visits||0)+1; st.first=st.first||Date.now(); st.last=Date.now();
+  st.visitsList=(st.visitsList||[]).concat([Date.now()]);
+  if(st.visitsList.length>500) st.visitsList=st.visitsList.slice(-500);
+  write('gvi_stats',st);
+
+  /* configurações do ADM — o painel publica aqui; mescla publicado (GVI_BAKED) → local */
+  function apply(){
+    if(!window.GVI) return;
+    var base=window.GVI_BAKED||{}, loc=read('gvi_config',null)||{};
+    function pick(k,fb){
+      if(loc[k]!==undefined&&loc[k]!==null&&loc[k]!=='') return loc[k];
+      if(base[k]!==undefined&&base[k]!==null&&base[k]!=='') return base[k];
+      return fb;
+    }
+    window.GVI.setTitulo(pick('titulo','O radar de mercado imobiliário de Teresina.'));
+    window.GVI.setWhatsapp(pick('whatsapp','5586988253050'));
+    window.GVI.setPrecos(pick('precos',[100,297,697]));
+    var F=window.GVI.fields||[], lt=loc.textos||{}, bt=base.textos||{}, eff={}, i, k;
+    for(i=0;i<F.length;i++){ k=F[i].k;
+      eff[k] = (lt[k]!==undefined&&lt[k]!==null&&lt[k]!=='') ? lt[k]
+             : ((bt[k]!==undefined&&bt[k]!==null&&bt[k]!=='') ? bt[k] : F[i].def);
+    }
+    window.GVI.setTextos(eff);
+    window.GVI.setPlanLinks(pick('whatsapp','5586988253050'), pick('checkout',[]));
+  }
+  window.addEventListener('load', function(){
+    setTimeout(apply,300); setTimeout(apply,1200);
+  });
+  window.addEventListener('storage', function(e){ if(e.key==='gvi_config') apply(); });
+
+  /* acesso do proprietário */
+  var fb=document.querySelector('.foot-bottom');
+  if(fb && !document.getElementById('admLink')){
+    var a=document.createElement('a');
+    a.id='admLink'; a.href='admin.html'; a.textContent='Área do proprietário · ADM';
+    a.style.cssText='color:#61728f;font-size:12.5px;letter-spacing:.3px';
+    a.addEventListener('mouseenter',function(){a.style.color='#ffc94d';});
+    a.addEventListener('mouseleave',function(){a.style.color='#61728f';});
+    fb.appendChild(a);
+  }
+})();
+</script>
+</body>
+</html>
