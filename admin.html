@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Painel ADM · Gerador Vendas de Imóveis — Teresina PI</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#04060c; --panel:rgba(255,255,255,.045); --panel-2:rgba(255,255,255,.075);
+  --line:rgba(255,255,255,.09); --line-2:rgba(255,255,255,.16);
+  --gold:#ffc94d; --gold-2:#ff9d2e; --emerald:#16e2a3; --cyan:#3ec9ff; --red:#ff5f6d; --violet:#a78bfa;
+  --text:#eaf0fb; --muted:#8b9cba; --muted-2:#61728f;
+  --font:'Manrope',system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased;line-height:1.55;min-height:100vh}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(900px 600px at 10% -5%,rgba(255,201,77,.10),transparent 60%),
+             radial-gradient(800px 600px at 92% 6%,rgba(62,201,255,.09),transparent 60%),
+             radial-gradient(900px 700px at 50% 108%,rgba(22,226,163,.08),transparent 60%);}
+a{color:inherit;text-decoration:none}
+.wrap{width:min(1320px,94vw);margin:0 auto;position:relative;z-index:2}
+.mono{font-family:var(--mono)}
+.gold{color:var(--gold)} .em{color:var(--emerald)} .cy{color:var(--cyan)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:11px;font-weight:700;font-size:13.5px;
+  padding:11px 17px;border:1px solid transparent;cursor:pointer;transition:.2s;font-family:var(--font);white-space:nowrap}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-2));color:#1a1200;box-shadow:0 8px 24px rgba(255,157,46,.3)}
+.btn-gold:hover{transform:translateY(-2px)}
+.btn-ghost{background:var(--panel);border-color:var(--line-2);color:var(--text)}
+.btn-ghost:hover{background:var(--panel-2)}
+.btn-em{background:linear-gradient(135deg,var(--emerald),#0bbf87);color:#00241a}
+.btn-red{background:rgba(255,95,109,.14);border-color:rgba(255,95,109,.4);color:#ff8a94}
+.btn-red:hover{background:rgba(255,95,109,.24)}
+.btn-sm{padding:8px 12px;font-size:12.5px;border-radius:9px}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--emerald);box-shadow:0 0 0 0 rgba(22,226,163,.7);animation:pulse 1.8s infinite;flex:0 0 auto;display:inline-block}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(22,226,163,.7)}70%{box-shadow:0 0 0 12px rgba(22,226,163,0)}100%{box-shadow:0 0 0 0 rgba(22,226,163,0)}}
+
+/* ================= LOGIN ================= */
+#gate{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:rgba(3,5,10,.96);backdrop-filter:blur(14px);padding:20px}
+#gate.hide{display:none}
+.gate-card{width:min(430px,100%);background:linear-gradient(180deg,rgba(14,20,34,.96),rgba(7,11,20,.96));
+  border:1px solid var(--line-2);border-radius:22px;padding:34px 28px;box-shadow:0 40px 90px rgba(0,0,0,.7)}
+.gate-mark{width:52px;height:52px;border-radius:15px;background:conic-gradient(from 210deg,var(--gold),var(--gold-2),#ff7a18,var(--gold));
+  display:grid;place-items:center;position:relative;overflow:hidden;margin:0 auto 20px;box-shadow:0 8px 28px rgba(255,157,46,.35)}
+.gate-mark::after{content:"";position:absolute;inset:13px;border-radius:50%;background:#04060c}
+.gate-mark i{position:absolute;width:50%;height:2px;background:rgba(4,6,12,.85);left:50%;top:50%;transform-origin:0 50%;animation:sw 2.6s linear infinite;z-index:3}
+@keyframes sw{to{transform:rotate(360deg)}}
+.gate-card h1{font-size:22px;text-align:center;letter-spacing:-.6px;margin-bottom:8px}
+.gate-card p.sub{text-align:center;color:var(--muted);font-size:13.5px;margin-bottom:24px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11.5px;font-weight:700;letter-spacing:.6px;color:var(--muted);margin-bottom:7px;text-transform:uppercase}
+.field input,.field select,.field textarea{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--line-2);border-radius:11px;
+  padding:12px 14px;color:var(--text);font-family:var(--font);font-size:14px;outline:none;transition:.2s;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold);background:rgba(255,201,77,.06)}
+.field select option{background:#0a0f1c}
+.gate-msg{font-size:13px;text-align:center;margin-top:14px;min-height:20px}
+.gate-msg.err{color:#ff8a94}
+.gate-msg.ok{color:var(--emerald)}
+.gate-foot{text-align:center;font-size:11.5px;color:var(--muted-2);margin-top:20px;line-height:1.6}
+
+/* ================= TOPBAR ================= */
+header.top{position:sticky;top:0;z-index:60;backdrop-filter:blur(16px);background:rgba(4,6,12,.85);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:68px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:15px;letter-spacing:-.2px}
+.brand .mark{width:34px;height:34px;border-radius:10px;background:conic-gradient(from 210deg,var(--gold),var(--gold-2),#ff7a18,var(--gold));
+  position:relative;overflow:hidden;flex:0 0 auto;box-shadow:0 6px 20px rgba(255,157,46,.32)}
+.brand .mark::after{content:"";position:absolute;inset:8px;border-radius:50%;background:#04060c}
+.brand .mark i{position:absolute;width:50%;height:2px;background:rgba(4,6,12,.85);left:50%;top:50%;transform-origin:0 50%;animation:sw 2.6s linear infinite;z-index:3}
+.brand small{display:block;font-size:10.5px;color:var(--gold);font-weight:700;letter-spacing:1px}
+.top-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.clock{font-family:var(--mono);font-size:13px;color:var(--muted);background:var(--panel);border:1px solid var(--line);padding:8px 12px;border-radius:10px}
+
+/* ================= LAYOUT ================= */
+main{padding:26px 0 70px}
+.sect{margin-bottom:26px}
+.sect-title{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.sect-title h2{font-size:17px;font-weight:800;letter-spacing:-.3px;display:flex;align-items:center;gap:10px}
+.sect-title .hint{font-size:12.5px;color:var(--muted-2)}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+@media(max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:680px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.02));border:1px solid var(--line);
+  border-radius:16px;padding:16px;position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.6}
+.kpi h4{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--muted-2);font-weight:800;margin-bottom:8px}
+.kpi .val{font-family:var(--mono);font-size:26px;font-weight:700;letter-spacing:-1px;line-height:1}
+.kpi .sub{font-size:11.5px;color:var(--muted);margin-top:8px}
+.panel{background:linear-gradient(180deg,rgba(12,18,32,.9),rgba(6,10,18,.9));border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 18px;
+  border-bottom:1px solid var(--line);background:rgba(255,255,255,.02)}
+.panel-head h3{font-size:14.5px;font-weight:700;display:flex;align-items:center;gap:9px}
+.panel-head .meta{font-size:11.5px;color:var(--muted-2);font-family:var(--mono)}
+.panel-body{padding:18px}
+.grid-2{display:grid;grid-template-columns:1.5fr 1fr;gap:18px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px}
+@media(max-width:1000px){.grid-2,.grid-3{grid-template-columns:1fr}}
+.chart-box{position:relative;height:280px}
+.chart-box canvas{width:100%;height:100%;display:block}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);margin-top:12px}
+.dot{width:9px;height:9px;border-radius:3px;display:inline-block;margin-right:6px}
+
+/* table */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th,td{padding:11px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--muted-2);font-weight:800}
+tbody tr:hover{background:rgba(255,255,255,.03)}
+tbody tr.isnew{animation:flash .9s ease}
+@keyframes flash{from{background:rgba(255,201,77,.18)}to{background:transparent}}
+.tag{font-size:10px;font-weight:800;letter-spacing:.6px;padding:4px 8px;border-radius:6px;text-transform:uppercase}
+.tag-venda{background:rgba(255,201,77,.16);color:var(--gold);border:1px solid rgba(255,201,77,.3)}
+.tag-aluguel{background:rgba(62,201,255,.14);color:var(--cyan);border:1px solid rgba(62,201,255,.3)}
+.tag-comercial{background:rgba(22,226,163,.14);color:var(--emerald);border:1px solid rgba(22,226,163,.3)}
+.empty{padding:34px 16px;text-align:center;color:var(--muted-2);font-size:13.5px}
+.empty .ic{font-size:30px;margin-bottom:10px;opacity:.5}
+
+/* controls */
+.ctrl{display:grid;gap:16px}
+.range-head{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);font-weight:600;margin-bottom:4px}
+.range-head b{font-family:var(--mono);color:var(--gold)}
+input[type=range]{width:100%;-webkit-appearance:none;height:5px;border-radius:4px;background:rgba(255,255,255,.12);outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;border-radius:50%;background:var(--gold);cursor:pointer;box-shadow:0 0 0 4px rgba(255,201,77,.18)}
+input[type=range]::-moz-range-thumb{width:17px;height:17px;border:none;border-radius:50%;background:var(--gold);cursor:pointer}
+.mini-feed{display:grid;gap:7px;max-height:200px;overflow:hidden}
+.mini-row{display:grid;grid-template-columns:9px 1fr auto;gap:10px;align-items:center;background:rgba(255,255,255,.03);
+  border:1px solid var(--line);border-radius:9px;padding:8px 11px;font-size:12.5px}
+.mini-row.new{animation:flash .9s ease}
+.mini-row .b small{display:block;color:var(--muted-2);font-size:11px}
+.mini-row .s{font-family:var(--mono);font-weight:700;font-size:12.5px}
+.led{width:9px;height:9px;border-radius:50%}
+.led-venda{background:var(--gold);box-shadow:0 0 9px var(--gold)}
+.led-aluguel{background:var(--cyan);box-shadow:0 0 9px var(--cyan)}
+.led-comercial{background:var(--emerald);box-shadow:0 0 9px var(--emerald)}
+
+.note{background:rgba(62,201,255,.07);border:1px solid rgba(62,201,255,.25);border-radius:14px;padding:16px 18px;font-size:13px;color:#c3d8ea}
+.note b{color:var(--cyan)}
+.note.warn{background:rgba(255,201,77,.07);border-color:rgba(255,201,77,.28)}
+.note.warn b{color:var(--gold)}
+.row-actions{display:flex;gap:10px;flex-wrap:wrap}
+.saved-flash{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);opacity:0;z-index:90;
+  background:linear-gradient(135deg,var(--emerald),#0bbf87);color:#00241a;font-weight:800;font-size:13.5px;
+  padding:13px 22px;border-radius:12px;box-shadow:0 16px 40px rgba(22,226,163,.35);transition:.3s;pointer-events:none}
+.saved-flash.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.search{background:rgba(255,255,255,.05);border:1px solid var(--line-2);border-radius:10px;padding:9px 12px;color:var(--text);
+  font-family:var(--font);font-size:13px;outline:none;min-width:210px}
+.search:focus{border-color:var(--gold)}
+.allset{display:none;text-align:center;padding:30px 16px}
+.allset.on{display:block}
+.allset .ic{width:56px;height:56px;border-radius:50%;background:rgba(22,226,163,.14);border:1px solid rgba(22,226,163,.45);
+  display:grid;place-items:center;font-size:25px;color:var(--emerald);margin:0 auto 14px}
+footer{border-top:1px solid var(--line);padding:26px 0 40px;position:relative;z-index:2}
+.foot-bottom{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted-2)}
+@media(max-width:600px){
+  header.top .wrap{height:auto;padding:10px 0}
+  .brand{font-size:13.5px}
+  .chart-box{height:240px}
+  .search{min-width:100%}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= LOGIN GATE ================= -->
+<div id="gate">
+  <div class="gate-card">
+    <div class="gate-mark"><i></i></div>
+    <h1 id="gateTitle">Definir senha de administrador</h1>
+    <p class="sub" id="gateSub">Primeiro acesso: crie a senha que só você vai usar para abrir este painel.</p>
+
+    <div class="field" id="fNew1">
+      <label for="p1">Nova senha ADM</label>
+      <input id="p1" type="password" placeholder="mínimo de 6 caracteres" autocomplete="new-password">
+    </div>
+    <div class="field" id="fNew2">
+      <label for="p2">Confirmar senha</label>
+      <input id="p2" type="password" placeholder="repita a senha" autocomplete="new-password">
+    </div>
+
+    <div class="field" id="fLogin" style="display:none">
+      <label for="p0">Senha ADM</label>
+      <input id="p0" type="password" placeholder="sua senha" autocomplete="current-password">
+    </div>
+
+    <button class="btn btn-gold" id="gateBtn" style="width:100%">Criar senha e entrar</button>
+    <div class="gate-msg" id="gateMsg"></div>
+    <div class="gate-foot">
+      Acesso restrito ao proprietário da página.<br>
+      Senha guardada apenas neste navegador — não enviamos nada para servidores.
+    </div>
+  </div>
+</div>
+
+<!-- ================= TOPBAR ================= -->
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <div class="mark"><i></i></div>
+      <div>Painel do Proprietário<small>ADM · TERESINA - PI</small></div>
+    </div>
+    <div class="top-right">
+      <span class="clock"><span class="live-dot" style="margin-right:7px"></span><span id="clock">--:--:--</span></span>
+      <a class="btn btn-ghost btn-sm" href="index.html" target="_blank">Ver página pública ↗</a>
+      <button class="btn btn-red btn-sm" id="logout">Sair</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- KPIs -->
+  <section class="sect">
+    <div class="sect-title">
+      <h2><span class="live-dot"></span> Visão geral ao vivo</h2>
+      <span class="hint" id="updHint">atualizado agora</span>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><h4>Leads totais</h4><div class="val gold" id="kLeads">0</div><div class="sub">desde o 1º acesso</div></div>
+      <div class="kpi"><h4>Leads hoje</h4><div class="val em" id="kHoje">0</div><div class="sub" id="kHojeSub">nenhum ainda</div></div>
+      <div class="kpi"><h4>Visitas na página</h4><div class="val" id="kVisitas">0</div><div class="sub">página pública</div></div>
+      <div class="kpi"><h4>Conversão</h4><div class="val cy" id="kConv">0%</div><div class="sub">visitas que viraram lead</div></div>
+      <div class="kpi"><h4>Bairro mais buscado</h4><div class="val" id="kTop" style="font-size:19px">—</div><div class="sub" id="kTopSub">sem dados ainda</div></div>
+    </div>
+  </section>
+
+  <!-- CHART + MARKET FEED -->
+  <section class="sect grid-2">
+    <div class="panel">
+      <div class="panel-head">
+        <h3><span class="live-dot"></span> Leads por hora — dados reais da sua página</h3>
+        <div class="meta" id="chartMeta">últimas 12h</div>
+      </div>
+      <div class="panel-body">
+        <div class="chart-box"><canvas id="cLeads"></canvas></div>
+        <div class="legend">
+          <span><i class="dot" style="background:var(--emerald)"></i> Leads captados</span>
+          <span><i class="dot" style="background:var(--violet)"></i> Visitas na página</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Dados oficiais do mercado</h3>
+        <div class="meta">Índice FipeZAP</div>
+      </div>
+      <div class="panel-body">
+        <div class="mini-feed" id="mktFeed" style="max-height:360px;overflow:auto"></div>
+        <div class="note" style="margin-top:14px;font-size:12.5px">
+          Valores publicados pelo <b>Índice FipeZAP</b>. Este painel apenas reproduz a fonte pública — não há preço simulado nem “leitura ao vivo” inventada.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BAR CHARTS -->
+  <section class="sect grid-2">
+    <div class="panel">
+      <div class="panel-head"><h3>Leads por bairro</h3><div class="meta">onde seu cliente procura</div></div>
+      <div class="panel-body"><div class="chart-box" style="height:300px"><canvas id="cBairro"></canvas></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>Leads por objetivo</h3><div class="meta">o que ele quer fazer</div></div>
+      <div class="panel-body"><div class="chart-box" style="height:300px"><canvas id="cObj"></canvas></div></div>
+    </div>
+  </section>
+
+  <!-- LEADS TABLE -->
+  <section class="sect">
+    <div class="panel">
+      <div class="panel-head">
+        <h3><span class="live-dot"></span> Leads recebidos <span class="mono" id="leadCount" style="color:var(--muted-2);font-weight:500">(0)</span></h3>
+        <div class="row-actions">
+          <input class="search" id="leadSearch" type="search" placeholder="Buscar nome, WhatsApp ou bairro...">
+          <button class="btn btn-ghost btn-sm" id="seed">Gerar leads de exemplo</button>
+          <button class="btn btn-ghost btn-sm" id="exportCsv">Exportar CSV</button>
+          <button class="btn btn-red btn-sm" id="clearLeads">Limpar leads</button>
+        </div>
+      </div>
+      <div class="panel-body" style="padding:0">
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr><th>Quando</th><th>Nome</th><th>WhatsApp</th><th>Bairro de interesse</th><th>Objetivo</th></tr>
+            </thead>
+            <tbody id="leadBody"></tbody>
+          </table>
+        </div>
+        <div class="empty" id="leadEmpty">
+          <div class="ic">◉</div>
+          Nenhum lead captado ainda.<br>
+          Assim que alguém preencher o formulário da página pública, o contato aparece aqui automaticamente — em tempo real, sem recarregar.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RADAR CONTROL + CONTENT -->
+  <section class="sect grid-2">
+    <div class="panel">
+      <div class="panel-head"><h3>Fontes dos dados da página</h3><div class="meta">públicas e verificáveis</div></div>
+      <div class="panel-body">
+        <div class="note" style="margin-bottom:14px">
+          Os números de mercado da página vêm do <b>Índice FipeZAP</b> e de reportagens que publicam o índice. Eles <b>não são editáveis aqui de propósito</b>: dado oficial não se ajusta por conveniência. Para atualizar, troque os valores em <span class="mono">index.html</span> quando sair uma nova leitura mensal.
+        </div>
+        <div style="font-size:12.5px;line-height:2;color:var(--muted)">
+          <a href="https://downloads.fipe.org.br/indices/fipezap/fipezap-202608-residencial-venda.pdf" target="_blank" rel="noopener" style="color:var(--cyan)">Índice FipeZAP — venda por bairro, ago/2026 (PDF oficial)</a><br>
+          <a href="https://downloads.fipe.org.br/indices/fipezap/fipezap-202608-residencial-locacao.pdf" target="_blank" rel="noopener" style="color:var(--cyan)">Índice FipeZAP — locação por bairro, ago/2026 (PDF oficial)</a><br>
+          <a href="https://myside.com.br/guia-imoveis/valor-metro-quadrado-teresina-pi" target="_blank" rel="noopener" style="color:var(--cyan)">Índice FipeZAP — Teresina (ago/2026)</a><br>
+          <a href="https://portalodia.com/noticias/teresina/teresina-tem-a-quinta-maior-valorizacao-imobiliaria-do-brasil-veja-os-bairros-mais-caros-459503.html" target="_blank" rel="noopener" style="color:var(--cyan)">Portal O Dia — valorização 2026</a><br>
+          <a href="https://g1.globo.com/piaui/noticia/2026/06/18/aluguel-alta-teresina.ghtml" target="_blank" rel="noopener" style="color:var(--cyan)">G1 — aluguel em Teresina</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><h3>Contato e planos</h3><div class="meta">o que aparece na página</div></div>
+      <div class="panel-body">
+        <div class="field">
+          <label for="cZap">WhatsApp de atendimento (só números)</label>
+          <input id="cZap" type="text" placeholder="5586988253050">
+          <div style="font-size:11.5px;color:var(--muted-2);margin-top:6px">Já preenchido com o seu número real (86) 98825-3050, com código do país (55). A página publica este número por padrão; altere aqui se quiser trocar.</div>
+        </div>
+        <div class="field">
+          <label for="cTitulo">Título principal (hero)</label>
+          <input id="cTitulo" type="text" placeholder="O radar de mercado imobiliário de Teresina.">
+        </div>
+        <div class="field" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+          <div><label for="pStart">Start R$</label><input id="pStart" type="number" step="1"></div>
+          <div><label for="pPro">Pro R$</label><input id="pPro" type="number" step="1"></div>
+          <div><label for="pMaster">Master R$</label><input id="pMaster" type="number" step="1"></div>
+        </div>
+        <div class="field" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+          <div><label for="lkStart">Pagamento Start</label><input id="lkStart" type="url" placeholder="https://..."></div>
+          <div><label for="lkPro">Pagamento Pro</label><input id="lkPro" type="url" placeholder="https://..."></div>
+          <div><label for="lkMaster">Pagamento Master</label><input id="lkMaster" type="url" placeholder="https://..."></div>
+        </div>
+        <div style="font-size:11.5px;color:var(--muted-2);margin:-4px 0 6px">Cole o link de checkout/PIX de cada plano (Mercado Pago, PagBank, Kiwify, PagSeguro...). Se deixar vazio, o botão do plano abre o seu WhatsApp já com o pedido — e você envia o PIX ou o link na conversa.</div>
+        <div class="row-actions" style="margin-top:6px">
+          <button class="btn btn-gold" id="saveCfg">Salvar e aplicar na página</button>
+          <button class="btn btn-ghost" id="resetCfg">Restaurar padrão</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EDITOR DA PÁGINA -->
+  <section class="sect">
+    <div class="panel">
+      <div class="panel-head"><h3>Editor da página</h3><div class="meta">todos os textos que o visitante vê</div></div>
+      <div class="panel-body">
+        <div class="note" style="margin-bottom:14px">
+          Como <b>proprietário</b>, aqui você edita qualquer texto da página pública. Clique em <b>Salvar</b> para aplicar na hora. Depois clique em <b>Publicar</b> para baixar o <span class="mono">index.html</span> já com as suas alterações dentro — é esse arquivo que você sobe no seu servidor (ou manda para quem hospeda).
+        </div>
+        <div id="pageEditor"></div>
+        <div class="row-actions" style="margin-top:14px">
+          <button class="btn btn-gold" id="saveAll">Salvar e aplicar na página</button>
+          <button class="btn btn-em" id="publish">Publicar página (baixar index.html)</button>
+          <a class="btn btn-ghost btn-sm" href="index.html" target="_blank" rel="noopener">Ver a página</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CAPTACAO DE LEADS -->
+  <section class="sect">
+    <div class="panel">
+      <div class="panel-head"><h3>Receber leads por e-mail (grátis)</h3><div class="meta">formulário da página → seu e-mail / planilha</div></div>
+      <div class="panel-body">
+        <div class="note" style="margin-bottom:14px">
+          O formulário da página salva o contato aqui no painel e deixa o visitante falar com você no WhatsApp. Para os leads chegarem <b>mesmo quando o visitante não fala no WhatsApp</b>, ligue o formulário a um serviço gratuito. Recomendado: <b>Web3Forms</b> — entre em <span class="mono">web3forms.com</span>, informe seu e-mail e copie a <b>Access Key</b> que eles enviam. Cole no campo abaixo, clique em <b>Salvar</b> e depois em <b>Publicar página</b>.
+        </div>
+        <div class="field">
+          <label for="lkW3">Chave do Web3Forms (Access Key)</label>
+          <input id="lkW3" type="text" placeholder="ex.: 1a2b3c4d-1234-5678-90ab-cdef12345678">
+          <div style="font-size:11.5px;color:var(--muted-2);margin-top:6px">Grátis até 250 envios por mês. Cada lead chega no seu e-mail com nome, WhatsApp, bairro de interesse e objetivo.</div>
+        </div>
+        <div class="field">
+          <label for="lkHook">Webhook opcional (JSON) — planilha / CRM</label>
+          <input id="lkHook" type="url" placeholder="https://... (Formspree, Google Sheets, etc.)">
+          <div style="font-size:11.5px;color:var(--muted-2);margin-top:6px">Opcional. Se preencher, o mesmo lead também é enviado para esse endereço — útil para cair numa planilha do Google.</div>
+        </div>
+        <div class="row-actions" style="margin-top:6px">
+          <button class="btn btn-gold" id="saveCfgLeads">Salvar</button>
+          <button class="btn btn-ghost" id="testLead">Enviar lead de teste</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DATA / SECURITY -->
+  <section class="sect grid-2">
+    <div class="panel">
+      <div class="panel-head"><h3>Backup e transferência</h3><div class="meta">seus dados</div></div>
+      <div class="panel-body">
+        <p style="font-size:13.5px;color:var(--muted);margin-bottom:14px">
+          Baixe um arquivo com todos os leads e configurações, ou restaure em outro navegador/computador. Útil para não perder nada ao limpar o navegador.
+        </p>
+        <div class="row-actions">
+          <button class="btn btn-em btn-sm" id="backup">Baixar backup (.json)</button>
+          <button class="btn btn-ghost btn-sm" id="restoreBtn">Restaurar backup</button>
+          <input type="file" id="restoreFile" accept="application/json" style="display:none">
+          <button class="btn btn-red btn-sm" id="changePwd">Trocar minha senha</button>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>Como este painel funciona</h3><div class="meta">leia com atenção</div></div>
+      <div class="panel-body">
+        <div class="note warn" style="margin-bottom:12px">
+          <b>Sobre a senha:</b> esta proteção roda no navegador. Ela impede acesso casual de quem pega seu computador, mas <b>não</b> é segurança de servidor — qualquer pessoa com conhecimento técnico pode ver o código da página. Para proteção de verdade (com senha validada em servidor e leads guardados em banco de dados), é preciso um back-end.
+        </div>
+        <div class="note">
+          <b>Leads e visitas</b> ficam salvos no armazenamento deste navegador. Se você abrir a página em outro computador ou limpar os dados do navegador, os registros não acompanham — use o <b>backup</b> ao lado para guardar.
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot-bottom">
+    <span>© <span id="year">2026</span> Gerador Vendas de Imóveis — Teresina - PI · Painel ADM</span>
+    <span>Uso restrito ao proprietário</span>
+  </div>
+</footer>
+
+<div class="saved-flash" id="flash">Salvo ✓</div>
+
+<script>
+(function(){
+'use strict';
+var $=function(s,c){return (c||document).querySelector(s);};
+var $$=function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s));};
+function fmtInt(n){return Math.round(n).toLocaleString('pt-BR');}
+function rnd(a,b){return a+Math.random()*(b-a);}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+
+/* ---------- armazenamento ---------- */
+var K_LEADS='gvi_leads', K_CFG='gvi_config', K_STATS='gvi_stats', K_HASH='gvi_adm_hash', K_AUTH='gvi_adm_auth';
+function read(k,def){ try{ var v=localStorage.getItem(k); return v?JSON.parse(v):def; }catch(e){ return def; } }
+function write(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+
+var DEF_CFG={ whatsapp:'5586988253050',
+  titulo:'O radar de mercado imobiliário de Teresina.',
+  precos:[100,297,697],
+  checkout:['','',''],
+  leads:{ web3forms:'', webhook:'' },
+  textos:{} };
+
+function cfg(){ var c=read(K_CFG,null); if(!c) return JSON.parse(JSON.stringify(DEF_CFG));
+  var o=JSON.parse(JSON.stringify(DEF_CFG)); for(var k in c){ if(c[k]!==undefined&&c[k]!==null) o[k]=c[k]; } return o; }
+function leads(){ return read(K_LEADS,[]); }
+function stats(){ return read(K_STATS,{visits:0,first:null,last:null}); }
+
+function flash(msg){ var f=$('#flash'); f.textContent=msg||'Salvo ✓'; f.classList.add('on'); clearTimeout(f._t);
+  f._t=setTimeout(function(){ f.classList.remove('on'); },2200); }
+
+/* ---------- hash de senha ---------- */
+function hash(txt){
+  if(window.crypto && window.crypto.subtle && window.TextEncoder){
+    return window.crypto.subtle.digest('SHA-256', new TextEncoder().encode('gvi::'+txt))
+      .then(function(buf){
+        var b=new Uint8Array(buf), s='';
+        for(var i=0;i<b.length;i++) s+=('00'+b[i].toString(16)).slice(-2);
+        return s;
+      }).catch(function(){ return hashFallback(txt); });
+  }
+  return Promise.resolve(hashFallback(txt));
+}
+function hashFallback(txt){
+  var h1=0x811c9dc5, str='gvi::'+txt;
+  for(var i=0;i<str.length;i++){ h1^=str.charCodeAt(i); h1=(h1*0x01000193)>>>0; }
+  return 'fb'+h1.toString(16);
+}
+
+/* ---------- LOGIN ---------- */
+var gate=$('#gate'), hasPwd=!!localStorage.getItem(K_HASH), justCreated=false;
+function bootGate(){
+  hasPwd=!!localStorage.getItem(K_HASH);
+  if(hasPwd){
+    $('#gateTitle').textContent='Painel do proprietário';
+    $('#gateSub').textContent='Informe sua senha ADM para abrir o painel.';
+    $('#gateBtn').textContent='Entrar';
+    $('#fNew1').style.display='none'; $('#fNew2').style.display='none'; $('#fLogin').style.display='';
+  }else{
+    $('#gateTitle').textContent='Definir senha de administrador';
+    $('#gateSub').textContent='Primeiro acesso: crie a senha que só você vai usar para abrir este painel.';
+    $('#gateBtn').textContent='Criar senha e entrar';
+    $('#fNew1').style.display=''; $('#fNew2').style.display=''; $('#fLogin').style.display='none';
+  }
+}
+function msg(t,cls){ var m=$('#gateMsg'); m.textContent=t||''; m.className='gate-msg '+(cls||''); }
+
+$('#gateBtn').addEventListener('click', function(){
+  msg('');
+  if(hasPwd){
+    var p=$('#p0').value;
+    if(!p){ msg('Digite sua senha.','err'); return; }
+    hash(p).then(function(h){
+      if(h===localStorage.getItem(K_HASH)){ enter(); }
+      else { msg('Senha incorreta. Tente novamente.','err'); $('#p0').value=''; }
+    });
+  }else{
+    var a=$('#p1').value, b=$('#p2').value;
+    if(a.length<6){ msg('A senha precisa ter no mínimo 6 caracteres.','err'); return; }
+    if(a!==b){ msg('As senhas não conferem.','err'); return; }
+    hash(a).then(function(h){
+      localStorage.setItem(K_HASH,h);
+      localStorage.setItem(K_AUTH,'1');
+      enter(); flash('Senha ADM criada ✓');
+    });
+  }
+});
+document.addEventListener('keydown', function(e){ if(e.key==='Enter' && !gate.classList.contains('hide')) $('#gateBtn').click(); });
+
+function enter(){ gate.classList.add('hide'); renderAll(); }
+function logout(){ try{ localStorage.removeItem(K_AUTH); }catch(e){} location.reload(); }
+
+/* sessão: se já autenticou nesta aba/navegador, não pede de novo */
+bootGate();
+if(localStorage.getItem(K_HASH) && localStorage.getItem(K_AUTH)==='1'){ gate.classList.add('hide'); }
+
+/* ---------- relógio ---------- */
+function clock(){ var d=new Date();
+  $('#clock').textContent=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0'); }
+clock(); setInterval(clock,1000);
+$('#year').textContent=new Date().getFullYear();
+
+/* ============================================================
+   GRÁFICOS
+   ============================================================ */
+function fit(cv){ var dpr=window.devicePixelRatio||1, r=cv.getBoundingClientRect();
+  if(!r.width||!r.height) return null;
+  cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr);
+  var ctx=cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); return {ctx:ctx,w:r.width,h:r.height}; }
+if(!CanvasRenderingContext2D.prototype.roundRect){
+  CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){ var q=Array.isArray(r)?r:[r,r,r,r];
+    this.beginPath(); this.moveTo(x+q[0],y); this.lineTo(x+w-q[1],y); this.quadraticCurveTo(x+w,y,x+w,y+q[1]);
+    this.lineTo(x+w,y+h-q[2]); this.quadraticCurveTo(x+w,y+h,x+w-q[2],y+h); this.lineTo(x+q[3],y+h);
+    this.quadraticCurveTo(x,y+h,x,y+h-q[3]); this.lineTo(x,y+q[0]); this.quadraticCurveTo(x,y,x+q[0],y); return this; };
+}
+
+var last12=[]; // {label, leads, visits}
+function buildHours(){
+  last12=[];
+  var d=new Date();
+  for(var i=11;i>=0;i--){
+    var h=new Date(d.getTime()-i*3600000);
+    last12.push({ key:h.getFullYear()+'-'+(h.getMonth()+1)+'-'+h.getDate()+'-'+h.getHours(),
+                  label:String(h.getHours()).padStart(2,'0')+'h', leads:0, visits:0 });
+  }
+}
+function countByHour(){
+  buildHours();
+  var map={}; last12.forEach(function(o){ map[o.key]=o; });
+  var now=Date.now();
+  leads().forEach(function(l){ if(!l.ts||now-l.ts>12*3600000) return; var d=new Date(l.ts);
+    var k=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+'-'+d.getHours(); if(map[k]) map[k].leads++; });
+  var s=stats();
+  (s.visitsList||[]).forEach(function(ts){ if(now-ts>12*3600000) return; var d=new Date(ts);
+    var k=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()+'-'+d.getHours(); if(map[k]) map[k].visits++; });
+}
+
+function drawLeadsChart(){
+  var cv=$('#cLeads'), g=fit(cv); if(!g) return;
+  var ctx=g.ctx,W=g.w,H=g.h; ctx.clearRect(0,0,W,H);
+  var padL=44,padR=14,padT=18,padB=28, pw=W-padL-padR, ph=H-padT-padB;
+  var maxL=Math.max(1,Math.max.apply(null,last12.map(function(o){return o.leads;})));
+  var maxV=Math.max(1,Math.max.apply(null,last12.map(function(o){return o.visits;})));
+  var max=Math.max(maxL,maxV,4)*1.25;
+  function X(i){return padL+(i/(last12.length-1))*pw;}
+  function Y(v){return padT+ph-(v/max)*ph;}
+  ctx.font='10px "JetBrains Mono", monospace'; ctx.textBaseline='middle';
+  for(var s=0;s<=4;s++){ var v=(s/4)*max,y=padT+ph-(s/4)*ph;
+    ctx.strokeStyle='rgba(255,255,255,.055)'; ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke();
+    ctx.fillStyle='rgba(139,156,186,.8)'; ctx.textAlign='right'; ctx.fillText(Math.round(v),padL-9,y); }
+
+  function line(key,color,fill){
+    ctx.beginPath();
+    for(var i=0;i<last12.length;i++){ var px=X(i),py=Y(last12[i][key]); if(i===0)ctx.moveTo(px,py); else ctx.lineTo(px,py); }
+    ctx.strokeStyle=color; ctx.lineWidth=2.2; ctx.lineJoin='round'; ctx.shadowColor=color; ctx.shadowBlur=10; ctx.stroke(); ctx.shadowBlur=0;
+    if(fill){ ctx.lineTo(X(last12.length-1),padT+ph); ctx.lineTo(X(0),padT+ph); ctx.closePath();
+      var gr=ctx.createLinearGradient(0,padT,0,padT+ph); gr.addColorStop(0,fill); gr.addColorStop(1,'rgba(0,0,0,0)'); ctx.fillStyle=gr; ctx.fill(); }
+    for(var j=0;j<last12.length;j++){ ctx.beginPath(); ctx.arc(X(j),Y(last12[j][key]),2.6,0,Math.PI*2); ctx.fillStyle=color; ctx.fill(); }
+  }
+  line('visits','rgba(167,139,250,.75)',null);
+  line('leads','#16e2a3','rgba(22,226,163,.3)');
+  ctx.fillStyle='rgba(139,156,186,.8)'; ctx.font='9.5px "JetBrains Mono", monospace'; ctx.textAlign='center';
+  for(var k=0;k<last12.length;k++){ if(k%2===0) ctx.fillText(last12[k].label, X(k), H-12); }
+}
+
+var BAIRROS=['Toda Teresina','Jóquei','São Cristóvão','Fátima','Horto','Planalto','Ininga','Noivos','Cristo Rei','Uruguai','Santa Isabel','Centro','Outro bairro'];
+var OBJS=['Comprar para morar','Comprar para investir','Alugar','Sou corretor / imobiliária'];
+
+function barChart(canvas, labels, values, colors){
+  var g=fit(canvas); if(!g) return;
+  var ctx=g.ctx,W=g.w,H=g.h; ctx.clearRect(0,0,W,H);
+  var padL=40,padR=14,padT=20,padB=76, pw=W-padL-padR, ph=H-padT-padB;
+  var max=Math.max(1,Math.max.apply(null,values))*1.22;
+  ctx.font='10px "JetBrains Mono", monospace'; ctx.textBaseline='middle';
+  for(var s=0;s<=4;s++){ var v=(s/4)*max,y=padT+ph-(s/4)*ph;
+    ctx.strokeStyle='rgba(255,255,255,.055)'; ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke();
+    ctx.fillStyle='rgba(139,156,186,.8)'; ctx.textAlign='right'; ctx.fillText(Math.round(v),padL-8,y); }
+  var n=labels.length, slot=pw/n, bw=Math.min(46,slot*0.58);
+  for(var i=0;i<n;i++){
+    var val=values[i], h=(val/max)*ph, x=padL+slot*i+(slot-bw)/2, y=padT+ph-h;
+    var gr=ctx.createLinearGradient(0,y,0,padT+ph);
+    gr.addColorStop(0, colors[i%colors.length]); gr.addColorStop(1,'rgba(255,255,255,.06)');
+    ctx.fillStyle=gr;
+    if(h>0.5){ ctx.beginPath(); ctx.roundRect(x,y,bw,Math.max(h,2),[7,7,3,3]); ctx.fill(); }
+    ctx.fillStyle='rgba(234,240,251,.92)'; ctx.font='bold 10.5px "JetBrains Mono", monospace'; ctx.textAlign='center';
+    ctx.fillText(val, x+bw/2, y-11);
+    ctx.save(); ctx.translate(x+bw/2, padT+ph+12); ctx.rotate(-Math.PI/4.4);
+    ctx.fillStyle='rgba(203,214,234,.92)'; ctx.font='10.5px "Manrope", sans-serif'; ctx.textAlign='right'; ctx.textBaseline='middle';
+    ctx.fillText(labels[i],0,0); ctx.restore();
+  }
+}
+
+/* ---------- KPIs ---------- */
+function pct(a,b){ return b>0 ? Math.round((a/b)*1000)/10 : 0; }
+function isToday(ts){ var d=new Date(ts), n=new Date(); return d.getDate()===n.getDate()&&d.getMonth()===n.getMonth()&&d.getFullYear()===n.getFullYear(); }
+
+function renderKPIs(){
+  var L=leads(), s=stats();
+  var hoje=L.filter(function(l){return isToday(l.ts||0);}).length;
+  $('#kLeads').textContent=fmtInt(L.length);
+  $('#kHoje').textContent=fmtInt(hoje);
+  $('#kHojeSub').textContent = hoje===1?'1 lead nas últimas horas':(hoje>1? 'novos contatos hoje':'nenhum ainda');
+  $('#kVisitas').textContent=fmtInt(s.visits||0);
+  $('#kConv').textContent=pct(L.length,(s.visits||0))+'%';
+  var cont={};
+  L.forEach(function(l){ var b=l.bairro||'—'; cont[b]=(cont[b]||0)+1; });
+  var top=null,tv=0; for(var k in cont){ if(cont[k]>tv){ tv=cont[k]; top=k; } }
+  $('#kTop').textContent = top || '—';
+  $('#kTopSub').textContent = top ? (tv+' lead'+(tv>1?'s':'')) : 'sem dados ainda';
+  $('#leadCount').textContent='('+L.length+')';
+}
+
+/* ---------- tabela ---------- */
+function renderTable(){
+  var L=leads().slice().sort(function(a,b){return (b.ts||0)-(a.ts||0);});
+  var q=($('#leadSearch').value||'').toLowerCase().trim();
+  if(q) L=L.filter(function(l){ return ((l.nome||'')+' '+(l.zap||'')+' '+(l.bairro||'')+' '+(l.objetivo||'')).toLowerCase().indexOf(q)>=0; });
+  var body=$('#leadBody'); body.innerHTML='';
+  if(!L.length){ $('#leadEmpty').style.display=''; return; }
+  $('#leadEmpty').style.display='none';
+  var seen={};
+  L.slice(0,300).forEach(function(l){
+    var d=l.ts?new Date(l.ts):null;
+    var quando=d?(String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')):'—';
+    var tr=document.createElement('tr');
+    if(l._new){ tr.className='isnew'; delete l._new; }
+    var cls = (l.objetivo||'').indexOf('Alugar')===0 ? 'aluguel' : (l.objetivo||'').indexOf('corretor')>=0 ? 'comercial' : 'venda';
+    tr.innerHTML='<td class="mono" style="color:var(--muted-2)">'+quando+'</td>'+
+      '<td style="font-weight:600">'+(l.nome||'—')+'</td>'+
+      '<td class="mono">'+(l.zap||'—')+'</td>'+
+      '<td>'+(l.bairro||'—')+'</td>'+
+      '<td><span class="tag tag-'+cls+'">'+(l.objetivo||'—')+'</span></td>';
+    body.appendChild(tr);
+  });
+}
+
+/* ---------- dados de mercado REAIS (Índice FipeZAP) ----------
+   Valores oficiais publicados pelo índice. Não há simulação:
+   o painel só repete o que a fonte pública informa.            */
+var MERCADO = [
+  { b:'Jóquei',        venda:9354, mes:'ago/2026' },
+  { b:'Fátima',        venda:9030, mes:'ago/2026' },
+  { b:'São Cristóvão', venda:9017, mes:'ago/2026' },
+  { b:'Horto',         venda:8412, mes:'ago/2026' },
+  { b:'Planalto',      venda:7239, mes:'ago/2026' },
+  { b:'Ininga',        venda:7189, mes:'ago/2026' },
+  { b:'Noivos',        venda:6567, mes:'ago/2026' },
+  { b:'Cristo Rei',    venda:5664, mes:'ago/2026' },
+  { b:'Uruguai',       venda:4731, mes:'ago/2026' },
+  { b:'Santa Isabel',  venda:4354, mes:'ago/2026' }
+];
+function renderMkt(){
+  var f=$('#mktFeed'); if(!f) return;
+  f.innerHTML='';
+  MERCADO.forEach(function(m){
+    var row=document.createElement('div'); row.className='mini-row';
+    row.innerHTML='<span class="led led-venda"></span>'+
+      '<div class="b">'+m.b+'<small>venda · FipeZAP '+m.mes+'</small></div>'+
+      '<div class="s" style="color:var(--gold)">R$ '+fmtInt(m.venda)+'/m²</div>';
+    f.appendChild(row);
+  });
+  var row=document.createElement('div'); row.className='mini-row';
+  row.innerHTML='<span class="led led-aluguel"></span>'+
+    '<div class="b">Média de Teresina<small>venda · FipeZAP ago/2026</small></div>'+
+    '<div class="s" style="color:var(--gold)">R$ 6.032/m²</div>';
+  f.appendChild(row);
+}
+
+/* ---------- render geral ---------- */
+function renderAll(){
+  renderKPIs(); renderTable(); countByHour();
+  drawLeadsChart();
+  // bairros
+  var cont={}; leads().forEach(function(l){ var b=l.bairro||'—'; cont[b]=(cont[b]||0)+1; });
+  var bl=BAIRROS.slice(), bv=bl.map(function(b){return cont[b]||0;});
+  barChart($('#cBairro'), bl, bv, ['#ffc94d','#3ec9ff','#16e2a3','#a78bfa']);
+  // objetivos
+  var oc={}; leads().forEach(function(l){ var o=l.objetivo||'—'; oc[o]=(oc[o]||0)+1; });
+  var ol=OBJS.slice(), ov=ol.map(function(o){return oc[o]||0;});
+  barChart($('#cObj'), ol, ov, ['#16e2a3','#3ec9ff','#ffc94d','#a78bfa']);
+  $('#updHint').textContent='atualizado '+new Date().toLocaleTimeString('pt-BR');
+}
+
+/* ---------- configuração ---------- */
+function fillCfg(){
+  var c=cfg();
+  $('#cZap').value=c.whatsapp; $('#cTitulo').value=c.titulo;
+  var p=c.precos||[100,297,697];
+  $('#pStart').value=p[0]; $('#pPro').value=p[1]; $('#pMaster').value=p[2];
+  var lk=c.checkout||['','',''];
+  $('#lkStart').value=lk[0]||''; $('#lkPro').value=lk[1]||''; $('#lkMaster').value=lk[2]||'';
+  var ld=c.leads||{}; $('#lkW3').value=ld.web3forms||''; $('#lkHook').value=ld.webhook||'';
+}
+
+function saveCfg(){
+  var c=cfg();
+  c.whatsapp=($('#cZap').value||'').replace(/\D/g,'') || DEF_CFG.whatsapp;
+  c.titulo=$('#cTitulo').value || DEF_CFG.titulo;
+  c.precos=[+$('#pStart').value||DEF_CFG.precos[0], +$('#pPro').value||DEF_CFG.precos[1], +$('#pMaster').value||DEF_CFG.precos[2]];
+  c.checkout=[($('#lkStart').value||'').trim(),($('#lkPro').value||'').trim(),($('#lkMaster').value||'').trim()];
+  c.leads={ web3forms:($('#lkW3').value||'').trim(), webhook:($('#lkHook').value||'').trim() };
+  write(K_CFG,c);
+  return c;
+}
+$('#saveCfg').addEventListener('click', function(){ saveCfg(); flash('Alterações aplicadas na página ✓'); });
+$('#resetCfg').addEventListener('click', function(){
+  if(!confirm('Restaurar todas as configurações para o padrão original?')) return;
+  write(K_CFG,JSON.parse(JSON.stringify(DEF_CFG))); fillCfg(); renderEditor(); flash('Padrão restaurado ✓');
+});
+$('#saveCfgLeads').addEventListener('click', function(){ saveCfg(); flash('Integração de leads salva ✓'); });
+$('#testLead').addEventListener('click', function(){
+  var w3=($('#lkW3').value||'').trim(), hook=($('#lkHook').value||'').trim();
+  if(!w3 && !hook){ flash('Informe a chave do Web3Forms (ou um webhook) antes de testar.'); return; }
+  var payload={ nome:'Lead de teste', whatsapp:'5586988253050', bairro:'Jóquei', objetivo:'Teste do painel',
+                pagina:'Radar Teresina', enviado_em:new Date().toISOString() };
+  var jobs=[];
+  if(w3) jobs.push(fetch('https://api.web3forms.com/submit',{ method:'POST',
+    headers:{'Content-Type':'application/json','Accept':'application/json'},
+    body:JSON.stringify(Object.assign({ access_key:w3, subject:'[TESTE] Novo lead — Radar Imobiliário Teresina', from_name:'Radar Teresina' }, payload)) }));
+  if(hook) jobs.push(fetch(hook,{ method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'}, body:JSON.stringify(payload) }));
+  flash('Enviando lead de teste...');
+  Promise.all(jobs.map(function(p){ return p.then(function(r){ return r.ok; }).catch(function(){ return false; }); }))
+    .then(function(res){ flash(res.every(Boolean) ? 'Lead de teste enviado ✓ — confira seu e-mail/planilha.' : 'Houve resposta de erro — confira a chave/URL e tente de novo.'); });
+});
+
+/* ---------- EDITOR DA PÁGINA (todos os textos da página pública) ---------- */
+var GVI_FIELDS=[
+ {k:'hero.tag',g:'Hero',label:'Selo do topo',sel:'.hero .pill',html:true,def:'<span class="src-dot"></span> DADOS OFICIAIS · ÍNDICE FIPEZAP · TERESINA - PI'},
+ {k:'hero.title',g:'Hero',label:'Título principal',sel:'.hero h1',html:true,def:'O <span class="grad">radar de mercado</span> imobiliário de Teresina.'},
+ {k:'hero.lead',g:'Hero',label:'Texto de apoio',sel:'.hero .lead',html:true,def:'Preço do metro quadrado por bairro, valorização, aluguel e volume de anúncios — com os números do <b>Índice FipeZAP</b>, atualizados mês a mês. Pare de negociar no achismo: chegue na conversa com o dado na mão e <b>capture o lead direto nesta página</b>.'},
+ {k:'hero.cta1',g:'Hero',label:'Botão principal',sel:'.hero-cta a:nth-child(1)',html:false,def:'Quero receber o relatório →'},
+ {k:'hero.cta2',g:'Hero',label:'Botão secundário',sel:'.hero-cta a:nth-child(2)',html:false,def:'Ver os dados de Teresina'},
+ {k:'nav.cta',g:'Hero',label:'Botão do menu (topo)',sel:'nav .wrap > a.btn',html:false,def:'Falar com um especialista'},
+ {k:'mercado.title',g:'Seções',label:'Título — Mercado',sel:'#mercado h2',html:true,def:'O mercado de Teresina, <span class="grad">em números</span>'},
+ {k:'mercado.sub',g:'Seções',label:'Subtítulo — Mercado',sel:'#mercado .sec-sub',html:false,def:'Tudo nesta seção vem do Índice FipeZAP e de reportagens que publicam o índice. Cada gráfico indica o mês da leitura — nada aqui é estimativa nossa nem simulação.'},
+ {k:'radar.title',g:'Seções',label:'Título — Radar',sel:'#radar h2',html:true,def:'O <span class="grad">radar de valorização</span> de Teresina'},
+ {k:'radar.sub',g:'Seções',label:'Subtítulo — Radar',sel:'#radar .sec-sub',html:false,def:'Cada ponta do radar é um bairro real, e a distância do centro é o preço médio do metro quadrado medido pelo índice. Quanto mais longe, mais caro o bairro.'},
+ {k:'precos.title',g:'Seções',label:'Título — Preços',sel:'#precos h2',html:true,def:'Quanto custa um imóvel em cada <span class="grad">bairro de Teresina</span>'},
+ {k:'precos.sub',g:'Seções',label:'Subtítulo — Preços',sel:'#precos .sec-sub',html:false,def:'Cálculo aberto: preço médio do m² do bairro (índice FipeZAP) × uma área de referência. Use como ponto de partida da conversa — não como avaliação de um imóvel específico.'},
+ {k:'faq.title',g:'Seções',label:'Título — Perguntas',sel:'#faq h2',html:true,def:'Perguntas <span class="grad">frequentes</span>'},
+ {k:'planos.title',g:'Planos',label:'Título',sel:'#planos h2',html:true,def:'Escolha o seu <span class="grad">acesso</span>'},
+ {k:'planos.sub',g:'Planos',label:'Subtítulo',sel:'#planos .sec-sub',html:false,def:'Valores e condições definidos pelo responsável pela página. Ajuste o que precisar no painel.'},
+ {k:'planos.n1',g:'Planos',label:'Plano 1 — nome',sel:'#planos .plan:nth-child(1) h4',html:false,def:'Acesso Start'},
+ {k:'planos.n2',g:'Planos',label:'Plano 2 — nome',sel:'#planos .plan:nth-child(2) h4',html:false,def:'Acesso Pro'},
+ {k:'planos.n3',g:'Planos',label:'Plano 3 — nome',sel:'#planos .plan:nth-child(3) h4',html:false,def:'Acesso Master'},
+ {k:'cta.eyebrow',g:'Contato',label:'Selo da seção',sel:'#cadastro .eyebrow',html:false,def:'Fale com o responsável'},
+ {k:'cta.title',g:'Contato',label:'Título da seção',sel:'#cadastro h2',html:false,def:'Receba a leitura do mercado de Teresina no seu WhatsApp.'},
+ {k:'cta.sub',g:'Contato',label:'Texto da seção',sel:'#cadastro h2 + p',html:false,def:'Deixe seu contato e informe o bairro de interesse. Retornamos com o preço médio atualizado do bairro, a valorização recente e as condições de acesso à plataforma.'},
+ {k:'form.title',g:'Contato',label:'Título do formulário',sel:'#leadForm h4',html:false,def:'Quero receber os dados'},
+ {k:'form.hint',g:'Contato',label:'Apoio do formulário',sel:'#leadForm .hint',html:false,def:'Leva menos de 1 minuto. Retornamos pelo WhatsApp.'},
+ {k:'form.cta',g:'Contato',label:'Botão do formulário',sel:'#leadForm button[type=submit]',html:false,def:'Quero receber os dados →'},
+ {k:'form.micro',g:'Contato',label:'Aviso do formulário',sel:'#leadForm .microcopy',html:false,def:'Seus dados ficam com o responsável pela página. Sem spam.'},
+ {k:'foot.about',g:'Rodapé',label:'Texto do rodapé',sel:'footer .foot-grid > div:first-child p',html:false,def:'Inteligência do mercado imobiliário de Teresina - PI, construída sobre o Índice FipeZAP: preço do metro quadrado por bairro, valorização, aluguel e captação de leads.'}
+];
+function renderEditor(){
+  var host=$('#pageEditor'); if(!host) return;
+  host.innerHTML='';
+  var saved=cfg().textos||{};
+  var groups={}, order=[];
+  GVI_FIELDS.forEach(function(f){ if(!groups[f.g]){ groups[f.g]=[]; order.push(f.g); } groups[f.g].push(f); });
+  order.forEach(function(g){
+    var wrap=document.createElement('div'); wrap.style.marginBottom='18px';
+    var t=document.createElement('div'); t.textContent=g;
+    t.style.cssText='font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--gold);margin-bottom:8px';
+    wrap.appendChild(t); host.appendChild(wrap);
+    groups[g].forEach(function(f){
+      var val=(saved[f.k]!==undefined&&saved[f.k]!==null&&saved[f.k]!=='')?saved[f.k]:f.def;
+      var d=document.createElement('div'); d.className='field'; d.style.marginBottom='10px';
+      var lab=document.createElement('label'); lab.textContent=f.label;
+      lab.style.cssText='display:block;font-size:12px;color:var(--muted);margin-bottom:5px';
+      var inp;
+      if(f.html||String(val).length>70){ inp=document.createElement('textarea'); inp.rows=3; }
+      else { inp=document.createElement('input'); inp.type='text'; }
+      inp.setAttribute('data-tk',f.k);
+      inp.style.cssText='width:100%;padding:9px 11px;border-radius:10px;border:1px solid var(--line-2);background:rgba(255,255,255,.05);color:var(--text);font:inherit;resize:vertical';
+      inp.value=val;
+      d.appendChild(lab); d.appendChild(inp); wrap.appendChild(d);
+    });
+  });
+}
+function collectTextos(){ var o={}; $$('#pageEditor [data-tk]').forEach(function(el){ o[el.getAttribute('data-tk')]=el.value; }); return o; }
+function saveAllCfg(){
+  var c=cfg();
+  c.whatsapp=($('#cZap').value||'').replace(/\D/g,'') || DEF_CFG.whatsapp;
+  c.titulo=$('#cTitulo').value || DEF_CFG.titulo;
+  c.precos=[+$('#pStart').value||DEF_CFG.precos[0], +$('#pPro').value||DEF_CFG.precos[1], +$('#pMaster').value||DEF_CFG.precos[2]];
+  c.checkout=[($('#lkStart').value||'').trim(),($('#lkPro').value||'').trim(),($('#lkMaster').value||'').trim()];
+  c.leads={ web3forms:($('#lkW3').value||'').trim(), webhook:($('#lkHook').value||'').trim() };
+  c.textos=collectTextos();
+  write(K_CFG,c); return c;
+}
+$('#saveAll').addEventListener('click', function(){ saveAllCfg(); flash('Conteúdo salvo e aplicado na página ✓'); });
+$('#publish').addEventListener('click', function(){
+  var c=saveAllCfg();
+  var baked={ whatsapp:c.whatsapp, titulo:c.titulo, precos:c.precos, checkout:c.checkout||[], leads:c.leads||{}, textos:c.textos||{} };
+  fetch('index.html',{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error('http'); return r.text(); }).then(function(html){
+    if(html.indexOf('id="gvi-baked"')<0){ flash('Marcador de publicação não encontrado no index.html'); return; }
+    var json='window.GVI_BAKED='+JSON.stringify(baked)+';';
+    var out=html.replace(/(<script id="gvi-baked"[^>]*>)[\s\S]*?(<\/script>)/, function(m,a,b){ return a+json+b; });
+    download('index.html', out, 'text/html;charset=utf-8');
+    flash('Página publicada — index.html baixado ✓');
+  }).catch(function(){ flash('Abra o painel por um endereço (ex.: http://) para publicar — pelo arquivo local o navegador não baixa o index atualizado.'); });
+});
+renderEditor();
+
+/* ---------- ações dos leads ---------- */
+$('#leadSearch').addEventListener('input', renderTable);
+$('#clearLeads').addEventListener('click', function(){
+  var L=leads();
+  if(!L.length){ flash('Não há leads para limpar'); return; }
+  if(!confirm('Apagar os '+L.length+' leads definitivamente? Baixe um backup antes se precisar.')) return;
+  write(K_LEADS,[]); renderAll(); flash('Leads apagados');
+});
+$('#exportCsv').addEventListener('click', function(){
+  var L=leads().slice().sort(function(a,b){return (b.ts||0)-(a.ts||0);});
+  if(!L.length){ flash('Não há leads para exportar'); return; }
+  var rows=[['Data','Hora','Nome','WhatsApp','Bairro','Objetivo']];
+  L.forEach(function(l){ var d=l.ts?new Date(l.ts):null;
+    rows.push([d?(String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear()):'',
+               d?(String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')):'',
+               l.nome||'',l.zap||'',l.bairro||'',l.objetivo||'']); });
+  var csv='\ufeff'+rows.map(function(r){ return r.map(function(c){ return '"'+String(c).replace(/"/g,'""')+'"'; }).join(';'); }).join('\r\n');
+  download('leads-teresina-'+new Date().toISOString().slice(0,10)+'.csv', csv, 'text/csv');
+  flash('CSV gerado ✓');
+});
+$('#seed').addEventListener('click', function(){
+  if(!confirm('Inserir 12 leads de exemplo para você ver o painel funcionando? Você poderá limpar depois.')) return;
+  var nomes=['Ana Paula','Marcos Vinícius','Juliana Rocha','Carlos Eduardo','Fernanda Lima','Rafael Souza','Beatriz Nunes','Diego Alencar','Patrícia Gomes','Thiago Ferraz','Camila Andrade','Leandro Prado'];
+  var L=leads();
+  for(var i=0;i<12;i++){
+    L.push({ nome:nomes[i], zap:'(86) 9'+Math.floor(rnd(8000,9999))+'-'+Math.floor(rnd(1000,9999)),
+      bairro:pick(BAIRROS), objetivo:pick(OBJS), ts:Date.now()-Math.floor(rnd(0,10*3600000)), demo:true });
+  }
+  write(K_LEADS,L); renderAll(); flash('12 leads de exemplo inseridos');
+});
+
+/* ---------- backup / restore / senha ---------- */
+function download(name,content,type){
+  var b=new Blob([content],{type:type||'application/json'});
+  var u=URL.createObjectURL(b), a=document.createElement('a');
+  a.href=u; a.download=name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(u); },1500);
+}
+$('#backup').addEventListener('click', function(){
+  download('backup-radar-teresina-'+new Date().toISOString().slice(0,10)+'.json',
+    JSON.stringify({geradoEm:new Date().toISOString(), leads:leads(), config:cfg(), stats:stats()},null,2));
+  flash('Backup gerado ✓');
+});
+$('#restoreBtn').addEventListener('click', function(){ $('#restoreFile').click(); });
+$('#restoreFile').addEventListener('change', function(e){
+  var f=e.target.files[0]; if(!f) return;
+  var r=new FileReader();
+  r.onload=function(){
+    try{
+      var d=JSON.parse(r.result);
+      if(d.leads && Array.isArray(d.leads)) write(K_LEADS,d.leads);
+      if(d.config) write(K_CFG,d.config);
+      if(d.stats) write(K_STATS,d.stats);
+      fillCfg(); renderAll(); flash('Backup restaurado ✓');
+    }catch(err){ alert('Arquivo inválido. Selecione um backup gerado por este painel.'); }
+  };
+  r.readAsText(f); e.target.value='';
+});
+$('#changePwd').addEventListener('click', function(){
+  var nova=prompt('Digite a NOVA senha ADM (mínimo 6 caracteres):');
+  if(nova===null) return;
+  if(nova.length<6){ alert('A senha precisa ter no mínimo 6 caracteres.'); return; }
+  var conf=prompt('Confirme a nova senha:');
+  if(conf!==nova){ alert('As senhas não conferem.'); return; }
+  hash(nova).then(function(h){ localStorage.setItem(K_HASH,h); localStorage.setItem(K_AUTH,'1'); flash('Senha atualizada ✓'); });
+});
+$('#logout').addEventListener('click', function(){ if(confirm('Sair do painel ADM?')) logout(); });
+
+/* ---------- AO VIVO: sincroniza entre abas ---------- */
+window.addEventListener('storage', function(e){
+  if(e.key===K_LEADS){
+    var novo=read(K_LEADS,[]);
+    if(novo.length && novo[novo.length-1]) novo[novo.length-1]._new=true;
+    renderAll(); flash('Novo lead recebido ✓');
+  }
+  if(e.key===K_STATS){ renderAll(); }
+  if(e.key===K_CFG){ fillCfg(); renderEditor(); }
+});
+
+/* ---------- loops ---------- */
+setInterval(function(){ renderKPIs(); renderTable(); countByHour(); drawLeadsChart(); }, 5000);
+setInterval(function(){ renderAll(); }, 30000);
+renderMkt();
+window.addEventListener('resize', function(){ countByHour(); drawLeadsChart();
+  var cont={}; leads().forEach(function(l){ var b=l.bairro||'—'; cont[b]=(cont[b]||0)+1; });
+  barChart($('#cBairro'),BAIRROS,BAIRROS.map(function(b){return cont[b]||0;}),['#ffc94d','#3ec9ff','#16e2a3','#a78bfa']);
+  var oc={}; leads().forEach(function(l){ var o=l.objetivo||'—'; oc[o]=(oc[o]||0)+1; });
+  barChart($('#cObj'),OBJS,OBJS.map(function(o){return oc[o]||0;}),['#16e2a3','#3ec9ff','#ffc94d','#a78bfa']);
+});
+
+/* ---------- boot ---------- */
+fillCfg(); renderAll();
+})();
+</script>
+</body>
+</html>
